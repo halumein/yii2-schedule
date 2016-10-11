@@ -1,26 +1,27 @@
-Yii2-repot
+Yii2-schedule
 ==========
 
 
-Модуль отчётов
+Модуль расписаний
 
 
 ```
-php composer require halumein/yii2-report "*"
+ composer require halumein/yii2-schedule "*"
+
 ```
 
 миграция:
 
 ```
-php yii migrate --migrationPath=vendor/halumein/yii2-report/migrations
+php yii migrate --migrationPath=vendor/halumein/yii2-schedule/migrations
 ```
 
 В конфигурационный файл приложения добавить модуль test
 
 ```php
     'modules' => [
-        'report' => [
-            'class' => 'halumein\report\Module',
+        'schedule' => [
+            'class' => 'halumein\schedule\Module',
         ],
         //...
     ]
