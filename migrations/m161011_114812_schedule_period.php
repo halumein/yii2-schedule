@@ -3,7 +3,7 @@
 use yii\db\Schema;
 use yii\db\Migration;
 
-class m161011_114812_Mass extends Migration
+class m161011_114812_schedule_period extends Migration
 {
 
     public function init()
@@ -15,8 +15,6 @@ class m161011_114812_Mass extends Migration
     public function safeUp()
     {
         $tableOptions = 'ENGINE=InnoDB';
-        $transaction=$this->db->beginTransaction();
-        try{
              $this->createTable('{{%schedule_period}}',[
                'id'=> $this->primaryKey(11),
                'owner_id'=> $this->integer(11)->notNull(),
@@ -30,22 +28,10 @@ class m161011_114812_Mass extends Migration
                'saturday'=> $this->text()->null()->defaultValue(null),
                'sunday'=> $this->text()->null()->defaultValue(null),
             ], $tableOptions);
-            $transaction->commit();
-        } catch (Exception $e) {
-             echo 'Catch Exception '.$e->getMessage().' and rollBack this';
-             $transaction->rollBack();
-        }
     }
 
     public function safeDown()
     {
-        $transaction=$this->db->beginTransaction();
-        try{
             $this->dropTable('{{%schedule_period}}');
-            $transaction->commit();
-        } catch (Exception $e) {
-            echo 'Catch Exception '.$e->getMessage().' and rollBack this';
-            $transaction->rollBack();
-        }
     }
 }
