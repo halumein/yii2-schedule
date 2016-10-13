@@ -8,6 +8,7 @@ use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\helpers\ArrayHelper;
 
 /**
  * ScheduleController implements the CRUD actions for SchedulePeriod model.
@@ -35,12 +36,10 @@ class ScheduleController extends Controller
      */
     public function actionIndex()
     {
-        $dataProvider = new ActiveDataProvider([
-            'query' => SchedulePeriod::find(),
-        ]);
+        $model = SchedulePeriod::find()->all();
 
         return $this->render('index', [
-            'dataProvider' => $dataProvider,
+            'modelSchedule' => $model,
         ]);
     }
 
@@ -63,13 +62,26 @@ class ScheduleController extends Controller
      */
     public function actionCreate()
     {
+        $targetList = [];
         $model = new SchedulePeriod();
+        if ($this->module->sourceList) {
+            $targetList = $this->module->sourceList;
+        }
+        if ($model->load(Yii::$app->request->post())) {
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+            $model->owner_id = \Yii::$app->user->id;
+
+
+
+            if ($model->save()) {
+                return $this->redirect('index');
+            }
+
+
         } else {
             return $this->render('create', [
                 'model' => $model,
+                'targetList' => $targetList,
             ]);
         }
     }
@@ -120,5 +132,18 @@ class ScheduleController extends Controller
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
+    }
+
+    public function actionGetTargetsByModel() {
+        $list = [];
+        $modelName = Yii::$app->request->post('model');
+        $model = new $modelName;
+        $model = $model->getActive();
+        $list = ArrayHelper::map($model,'id','name');
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        return [
+            'status' => 'success',
+            'list' => $list,
+        ];
     }
 }

@@ -1,5 +1,5 @@
 <?php
-
+\halumein\schedule\assets\ScheduleAsset::register($this);
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 

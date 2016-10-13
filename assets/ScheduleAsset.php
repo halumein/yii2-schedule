@@ -3,7 +3,7 @@ namespace halumein\schedule\assets;
 
 use yii\web\AssetBundle;
 
-class WidgetAsset extends AssetBundle
+class ScheduleAsset extends AssetBundle
 {
     public $depends = [
         'yii\web\JqueryAsset',
@@ -11,12 +11,12 @@ class WidgetAsset extends AssetBundle
     ];
 
     public $js = [
-        'js/scripts.js',
+        'js/schedule.js',
     ];
 
-    public $css = [
-        'css/styles.css',
-    ];
+//    public $css = [
+//        'css/styles.css',
+//    ];
 
     public function init()
     {
