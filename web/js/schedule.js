@@ -2,22 +2,36 @@
 $(function () {
 
 
-    var $testButton = $('[data-role=sendButton]'),
+    var $testButton = $('[data-role=sendTime]'),
         $selectTargetModel = $('[data-role=targetModelList]'),
-        $selectTargetId = $('[data-role=targetId]');
+        $selectTargetId = $('[data-role=targetId]'),
+        $addTime = $('[data-role=addTime]');
 
 
     $selectTargetModel.on('change',function () {
         schedule.getTargetId($selectTargetModel.data('url'),$selectTargetModel.val(),$('meta[name=csrf-token]').attr("content"));
     });
 
-    $testButton.on('click',function () {
-        var url = $testButton.data('url'),
-            content = $testButton.html();
-            schedule.send(url,content);
+    $addTime.on('click',function () {
+        var url = window.location.href,
+            time = $('.tab-content .active [data-role=getTime]').val();
+        schedule.setTime(url,time);
     });
 
     var schedule = {
+
+        setTime: function (url,time) {
+          $.ajax({
+              type: 'POST',
+              url: url,
+              data: {data:time},
+              success: function () {
+                  console.log(time);
+                  $('.tab-content .active [data-role=time]').text(time);
+                  $('.tab-content .active [data-role=getTime]').val("");
+              }
+          });
+        },
 
         getTargetId: function (url,model,csrfToken) {
             $.ajax({
@@ -42,7 +56,7 @@ $(function () {
                 url: url,
                 data: {data:data, _csrf : csrfToken},
                 success: function (response) {
-                    console.log(response);
+                    console.log(data);
                 }
             });
         }

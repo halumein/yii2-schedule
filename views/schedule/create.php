@@ -4,7 +4,6 @@
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\ActiveForm;
-use app\models\User;
 
 /* @var $this yii\web\View */
 /* @var $model halumein\schedule\models\SchedulePeriod */
@@ -40,32 +39,39 @@ $this->params['breadcrumbs'][] = $this->title;
             </ul>
             <div class="tab-content">
                 <div id="panel1" class="tab-pane fade in active">
-                    <?= $form->field($model, 'monday')->textInput(['class' => 'dayInput'])->label(false) ?>
-                    <span class="glyphicon glyphicon-plus-sign"></span>
+                    <div class="time" data-role="time" data-target="monday"></div>
+                    <?= $form->field($model, 'monday')->textInput(['class' => 'dayInput','data-role' => 'getTime'])->label(false) ?>
+                    <span class="glyphicon glyphicon-plus-sign" data-role="addTime"></span>
                 </div>
                 <div id="panel2" class="tab-pane">
-                    <?= $form->field($model, 'tuesday')->textInput(['class' => 'dayInput'])->label(false) ?>
-                    <span class="glyphicon glyphicon-plus-sign"></span>
+                    <div class="time" data-role="time" data-target="tuesday"></div>
+                    <?= $form->field($model, 'tuesday')->textInput(['class' => 'dayInput','data-role' => 'getTime'])->label(false) ?>
+                    <span class="glyphicon glyphicon-plus-sign" data-role="addTime"></span>
                 </div>
                 <div id="panel3" class="tab-pane">
-                    <?= $form->field($model, 'wednesday')->textInput(['class' => 'dayInput'])->label(false) ?>
-                    <span class="glyphicon glyphicon-plus-sign"></span>
+                    <div class="time" data-role="time" data-target="wednesday"></div>
+                    <?= $form->field($model, 'wednesday')->textInput(['class' => 'dayInput','data-role' => 'getTime'])->label(false) ?>
+                    <span class="glyphicon glyphicon-plus-sign" data-role="addTime"></span>
                 </div>
                 <div id="panel4" class="tab-pane">
-                    <?= $form->field($model, 'thursday')->textInput(['class' => 'dayInput'])->label(false) ?>
-                    <span class="glyphicon glyphicon-plus-sign"></span>
+                    <div class="time" data-role="time" data-target="thursday"></div>
+                    <?= $form->field($model, 'thursday')->textInput(['class' => 'dayInput','data-role' => 'getTime'])->label(false) ?>
+                    <span class="glyphicon glyphicon-plus-sign" data-role="addTime"></span>
                 </div>
                 <div id="panel5" class="tab-pane">
-                    <?= $form->field($model, 'friday')->textInput(['class' => 'dayInput'])->label(false) ?>
-                    <span class="glyphicon glyphicon-plus-sign"></span>
+                    <div class="time" data-role="time" data-target="friday"></div>
+                    <?= $form->field($model, 'friday')->textInput(['class' => 'dayInput','data-role' => 'getTime'])->label(false) ?>
+                    <span class="glyphicon glyphicon-plus-sign" data-role="addTime"></span>
                 </div>
                 <div id="panel6" class="tab-pane">
-                    <?= $form->field($model, 'saturday')->textInput(['class' => 'dayInput'])->label(false) ?>
-                    <span class="glyphicon glyphicon-plus-sign"></span>
+                    <div class="time" data-role="time" data-target="saturday"></div>
+                    <?= $form->field($model, 'saturday')->textInput(['class' => 'dayInput','data-role' => 'getTime'])->label(false) ?>
+                    <span class="glyphicon glyphicon-plus-sign" data-role="addTime"></span>
                 </div>
                 <div id="panel7" class="tab-pane">
-                    <?= $form->field($model, 'sunday')->textInput(['class' => 'dayInput'])->label(false) ?>
-                    <span class="glyphicon glyphicon-plus-sign"></span>
+                    <div class="time" data-role="time" data-target="sunday"></div>
+                    <?= $form->field($model, 'sunday')->textInput(['class' => 'dayInput','data-role' => 'getTime'])->label(false) ?>
+                    <span class="glyphicon glyphicon-plus-sign" data-role="addTime"></span>
                 </div>
             </div>
         </div>
