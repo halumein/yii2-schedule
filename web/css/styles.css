@@ -1,0 +1,20 @@
+
+.dayInput {
+    border: 1px solid #23527c; //цвет рамки
+    border-radius: 15px; //закругление углов (общее)
+    -webkit-border-radius: 15px; //закругление углов (Google Chrome)
+    -moz-border-radius: 15px; //закругление углов (FireFox)
+    -khtml-border-radius: 15px; //закругление углов (Safari)
+    background: #ffffff !important; // желательно прописывать, так как в Chrome при сохранных данных оно может быть желтым
+    outline: none; // удаляет обводку в браузерах хром(желтая) и сафари(синяя)
+    height: 24px; // высота на свое усмотрение
+    width: 120px; // ширина на свое усмотрение
+    color: #cccccc; //цвет шрифта в обычном состоянии
+    font-size: 11px; // Размер шрифта
+    font-family: Tahoma; // Стиль шрифта
+}
+
+.dayInput:focus {
+    color: #0003ca;
+    border: 1px solid #0703cc
+}

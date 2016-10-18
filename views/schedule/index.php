@@ -22,10 +22,6 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="row container-fluid">
         <div class="col-md-4">
             <div class="col-md-4">
-                Владелец: <br>
-                <?=$model->owner_id ?>
-            </div>
-            <div class="col-md-4">
                 Расписание для: <br>
                 <?=$model->target_model ?>
             </div>

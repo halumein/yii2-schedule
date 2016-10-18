@@ -7,7 +7,7 @@ $(function () {
         $selectTargetId = $('[data-role=targetId]');
 
 
-    $selectTargetModel.on('click',function () {
+    $selectTargetModel.on('change',function () {
         schedule.getTargetId($selectTargetModel.data('url'),$selectTargetModel.val(),$('meta[name=csrf-token]').attr("content"));
     });
 
@@ -40,8 +40,7 @@ $(function () {
             $.ajax({
                 type: 'POST',
                 url: url,
-                data: {data:data},
-                data: { _csrf : csrfToken},
+                data: {data:data, _csrf : csrfToken},
                 success: function (response) {
                     console.log(response);
                 }

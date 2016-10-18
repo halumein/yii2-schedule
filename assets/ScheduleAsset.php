@@ -14,9 +14,9 @@ class ScheduleAsset extends AssetBundle
         'js/schedule.js',
     ];
 
-//    public $css = [
-//        'css/styles.css',
-//    ];
+    public $css = [
+        'css/styles.css',
+    ];
 
     public function init()
     {

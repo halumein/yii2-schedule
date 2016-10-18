@@ -36,8 +36,7 @@ class ScheduleController extends Controller
      */
     public function actionIndex()
     {
-        $model = SchedulePeriod::find()->all();
-
+        $model = SchedulePeriod::find()->where(['owner_id' => \Yii::$app->user->id])->all();
         return $this->render('index', [
             'modelSchedule' => $model,
         ]);

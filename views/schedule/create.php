@@ -19,15 +19,14 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php $form = ActiveForm::begin(); ?>
     <div class="row container-fluid">
         <div class="col-md-4">
-            
             <?= $form->field($model, 'target_model')->dropDownList($targetList,[
                 'data-role' => 'targetModelList',
                 'data-url' => Url::to(['/schedule/schedule/get-targets-by-model']),
-            ]); ?>
+            ])->label('Расписание для:'); ?>
 
             <?= $form->field($model, 'target_id')->dropDownList([],[
                 'data-role' => 'targetId',
-            ]); ?>
+            ])->label(false); ?>
         </div>
         <div class="col-md-8">
             <ul class="nav nav-tabs">
@@ -41,25 +40,32 @@ $this->params['breadcrumbs'][] = $this->title;
             </ul>
             <div class="tab-content">
                 <div id="panel1" class="tab-pane fade in active">
-                    <?= $form->field($model, 'monday')->textarea(['rows' => 6]) ?>
+                    <?= $form->field($model, 'monday')->textInput(['class' => 'dayInput'])->label(false) ?>
+                    <span class="glyphicon glyphicon-plus-sign"></span>
                 </div>
                 <div id="panel2" class="tab-pane">
-                    <?= $form->field($model, 'tuesday')->textarea(['rows' => 6]) ?>
+                    <?= $form->field($model, 'tuesday')->textInput(['class' => 'dayInput'])->label(false) ?>
+                    <span class="glyphicon glyphicon-plus-sign"></span>
                 </div>
                 <div id="panel3" class="tab-pane">
-                    <?= $form->field($model, 'wednesday')->textarea(['rows' => 6]) ?>
+                    <?= $form->field($model, 'wednesday')->textInput(['class' => 'dayInput'])->label(false) ?>
+                    <span class="glyphicon glyphicon-plus-sign"></span>
                 </div>
                 <div id="panel4" class="tab-pane">
-                    <?= $form->field($model, 'thursday')->textarea(['rows' => 6]) ?>
+                    <?= $form->field($model, 'thursday')->textInput(['class' => 'dayInput'])->label(false) ?>
+                    <span class="glyphicon glyphicon-plus-sign"></span>
                 </div>
                 <div id="panel5" class="tab-pane">
-                    <?= $form->field($model, 'friday')->textarea(['rows' => 6]) ?>
+                    <?= $form->field($model, 'friday')->textInput(['class' => 'dayInput'])->label(false) ?>
+                    <span class="glyphicon glyphicon-plus-sign"></span>
                 </div>
                 <div id="panel6" class="tab-pane">
-                    <?= $form->field($model, 'saturday')->textarea(['rows' => 6]) ?>
+                    <?= $form->field($model, 'saturday')->textInput(['class' => 'dayInput'])->label(false) ?>
+                    <span class="glyphicon glyphicon-plus-sign"></span>
                 </div>
                 <div id="panel7" class="tab-pane">
-                    <?= $form->field($model, 'sunday')->textarea(['rows' => 6]) ?>
+                    <?= $form->field($model, 'sunday')->textInput(['class' => 'dayInput'])->label(false) ?>
+                    <span class="glyphicon glyphicon-plus-sign"></span>
                 </div>
             </div>
         </div>
