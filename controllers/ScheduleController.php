@@ -63,6 +63,15 @@ class ScheduleController extends Controller
     {
         $targetList = [];
         $model = new SchedulePeriod();
+        $days = [
+            'monday' => $schedule->monday,
+            'tuesday' => $schedule->tuesday,
+            'wednesday' => $schedule->wednesday,
+            'thursday' => $schedule->thursday,
+            'friday' => $schedule->friday,
+            'saturday' =>  $schedule->saturday,
+            'sunday' => $schedule->sunday
+        ];
         if ($this->module->sourceList) {
             $targetList = $this->module->sourceList;
         }
@@ -81,6 +90,7 @@ class ScheduleController extends Controller
             return $this->render('create', [
                 'model' => $model,
                 'targetList' => $targetList,
+                'days' => $days,
             ]);
         }
     }

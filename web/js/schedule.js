@@ -2,11 +2,16 @@
 $(function () {
 
 
-    var $testButton = $('[data-role=sendTime]'),
-        $selectTargetModel = $('[data-role=targetModelList]'),
+    var $selectTargetModel = $('[data-role=targetModelList]'),
         $selectTargetId = $('[data-role=targetId]'),
-        $addTime = $('[data-role=addTime]');
+        $addTime = $('[data-role=addTime]'),
+        $timeInput = $('[data-role=getTime]'),
+        $arrTime = [],
+        $testButton = $('[data-role=saveSchedule]');
 
+    $testButton.on('click',function () {
+       schedule.send($('meta[name=csrf-token]').attr("content"));
+    });
 
     $selectTargetModel.on('change',function () {
         schedule.getTargetId($selectTargetModel.data('url'),$selectTargetModel.val(),$('meta[name=csrf-token]').attr("content"));
@@ -14,8 +19,8 @@ $(function () {
 
     $addTime.on('click',function () {
         var url = window.location.href,
-            time = $('.tab-content .active [data-role=getTime]').val();
-        schedule.setTime(url,time);
+            time = $timeInput.val();
+            (time == '') ? alert('Не задан период!') : schedule.setTime(url,time);
     });
 
     var schedule = {
@@ -27,8 +32,8 @@ $(function () {
               data: {data:time},
               success: function () {
                   console.log(time);
-                  $('.tab-content .active [data-role=time]').text(time);
-                  $('.tab-content .active [data-role=getTime]').val("");
+                  $('.tab-content .active [data-role=time]').append('<div class="col-md-2 fade in" data-role="schedule-item">'+time+'</div><br>');
+                  $timeInput.val("");
               }
           });
         },
@@ -50,13 +55,15 @@ $(function () {
             });
         },
         
-        send: function (url,data, csrfToken) {
+        send: function (csrfToken) {
             $.ajax({
                 type: 'POST',
-                url: url,
-                data: {data:data, _csrf : csrfToken},
+                data: {_csrf : csrfToken},
                 success: function (response) {
-                    console.log(data);
+                        $('[data-role=schedule-day-period] [data-role=time]').each(function () {
+                            alert($(this).text()+" / "+$(this).data('target'));
+                        });
+                    console.log($arrTime);
                 }
             });
         }

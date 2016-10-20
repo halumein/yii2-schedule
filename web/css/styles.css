@@ -14,6 +14,15 @@
     font-family: Tahoma; // Стиль шрифта
 }
 
+.set-period-block {
+    overflow: hidden;
+}
+
+.set-period-block input, .set-period-block span {
+    display:inline-block;
+}
+
+
 .dayInput:focus {
     color: #0003ca;
     border: 1px solid #0703cc
