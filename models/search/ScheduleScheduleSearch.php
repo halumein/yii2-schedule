@@ -5,12 +5,12 @@ namespace halumein\schedule\models\search;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use halumein\schedule\models\SchedulePeriod;
+use halumein\schedule\models\ScheduleSchedule;
 
 /**
- * SchedulePeriodSearch represents the model behind the search form of `halumein\schedule\models\SchedulePeriod`.
+ * ScheduleScheduleSearch represents the model behind the search form of `app\vendor\halumein\schedule\models\ScheduleSchedule`.
  */
-class SchedulePeriodSearch extends SchedulePeriod
+class ScheduleScheduleSearch extends ScheduleSchedule
 {
     /**
      * @inheritdoc
@@ -19,7 +19,7 @@ class SchedulePeriodSearch extends SchedulePeriod
     {
         return [
             [['id', 'owner_id', 'target_id'], 'integer'],
-            [['target_model', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'], 'safe'],
+            [['target_model', 'name', 'date'], 'safe'],
         ];
     }
 
@@ -41,7 +41,7 @@ class SchedulePeriodSearch extends SchedulePeriod
      */
     public function search($params)
     {
-        $query = SchedulePeriod::find();
+        $query = ScheduleSchedule::find();
 
         // add conditions that should always apply here
 
@@ -62,16 +62,11 @@ class SchedulePeriodSearch extends SchedulePeriod
             'id' => $this->id,
             'owner_id' => $this->owner_id,
             'target_id' => $this->target_id,
+            'date' => $this->date,
         ]);
 
         $query->andFilterWhere(['like', 'target_model', $this->target_model])
-            ->andFilterWhere(['like', 'monday', $this->monday])
-            ->andFilterWhere(['like', 'tuesday', $this->tuesday])
-            ->andFilterWhere(['like', 'wednesday', $this->wednesday])
-            ->andFilterWhere(['like', 'thursday', $this->thursday])
-            ->andFilterWhere(['like', 'friday', $this->friday])
-            ->andFilterWhere(['like', 'saturday', $this->saturday])
-            ->andFilterWhere(['like', 'sunday', $this->sunday]);
+            ->andFilterWhere(['like', 'name', $this->name]);
 
         return $dataProvider;
     }

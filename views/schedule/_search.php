@@ -4,11 +4,11 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
 /* @var $this yii\web\View */
-/* @var $model halumein\schedule\models\search\SchedulePeriodSearch */
+/* @var $model app\vendor\halumein\schedule\models\search\ScheduleScheduleSearch */
 /* @var $form yii\widgets\ActiveForm */
 ?>
 
-<div class="schedule-period-search">
+<div class="schedule-schedule-search">
 
     <?php $form = ActiveForm::begin([
         'action' => ['index'],
@@ -25,19 +25,9 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'target_id') ?>
 
-    <?= $form->field($model, 'monday') ?>
+    <?= $form->field($model, 'name') ?>
 
-    <?php // echo $form->field($model, 'tuesday') ?>
-
-    <?php // echo $form->field($model, 'wednesday') ?>
-
-    <?php // echo $form->field($model, 'thursday') ?>
-
-    <?php // echo $form->field($model, 'friday') ?>
-
-    <?php // echo $form->field($model, 'saturday') ?>
-
-    <?php // echo $form->field($model, 'sunday') ?>
+    <?php // echo $form->field($model, 'date') ?>
 
     <div class="form-group">
         <?= Html::submitButton('Search', ['class' => 'btn btn-primary']) ?>

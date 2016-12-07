@@ -3,16 +3,20 @@
 namespace halumein\schedule\controllers;
 
 use Yii;
+use halumein\schedule\models\ScheduleSchedule;
 use halumein\schedule\models\SchedulePeriod;
-use yii\data\ActiveDataProvider;
+use halumein\schedule\models\ScheduleTime;
+use halumein\schedule\models\ScheduleRecord;
+use halumein\schedule\models\search\ScheduleScheduleSearch;
+use halumein\schedule\models\ScheduleUserToSchedule;
+use yii\helpers\Json;
+use yii\helpers\Url;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
 
-/**
- * ScheduleController implements the CRUD actions for SchedulePeriod model.
- */
+
 class ScheduleController extends Controller
 {
     /**
@@ -21,6 +25,19 @@ class ScheduleController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => \yii\filters\AccessControl::className(),
+//                'only' => ['index,update,delete'],
+//                'allow' => true,
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'roles' => ['@'],
+                        'actions' => ['index', 'update', 'delete','get-targets-by-model','view','schedule-list','save-record','delete-record']
+                    ],
+
+                ],
+            ],
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
@@ -30,92 +47,104 @@ class ScheduleController extends Controller
         ];
     }
 
-    /**
-     * Lists all SchedulePeriod models.
-     * @return mixed
-     */
     public function actionIndex()
     {
-        $model = SchedulePeriod::find()->where(['owner_id' => \Yii::$app->user->id])->all();
+        $searchModel = new ScheduleScheduleSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
         return $this->render('index', [
-            'modelSchedule' => $model,
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
         ]);
     }
 
-    /**
-     * Displays a single SchedulePeriod model.
-     * @param integer $id
-     * @return mixed
-     */
-    public function actionView($id)
+    public function actionScheduleList()
     {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
+        $schedules = ScheduleSchedule::find()->all();
+        return $this->render('schedule-list',[
+            'schedules' => $schedules,
         ]);
     }
 
-    /**
-     * Creates a new SchedulePeriod model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
-     * @return mixed
-     */
-    public function actionCreate()
+    public function actionView($id = null)
     {
-        $targetList = [];
-        $model = new SchedulePeriod();
+        var_dump(\Yii::$app->has('schedule'));
+        die;
+        $owner = false;
         $days = [
-            'monday' => $schedule->monday,
-            'tuesday' => $schedule->tuesday,
-            'wednesday' => $schedule->wednesday,
-            'thursday' => $schedule->thursday,
-            'friday' => $schedule->friday,
-            'saturday' =>  $schedule->saturday,
-            'sunday' => $schedule->sunday
+            'monday' => 0,
+            'tuesday' => 1,
+            'wednesday' => 2,
+            'thursday' => 3,
+            'friday' => 4,
+            'saturday' =>  5,
+            'sunday' => 6,
         ];
+        if (ScheduleUserToSchedule::find()->where(['schedule_id'=>$id, 'user_id'=>\Yii::$app->user->id])->one()) {
+            $owner = true;
+        }
+        $model = ScheduleSchedule::findOne($id);
+        $time = ScheduleTime::find()->all();
+        $timeList = ArrayHelper::map($time,'id','time');
+        return $this->render('view',[
+            'model' => $model,
+            'days' => $days,
+            'timeList' => $timeList,
+            'owner' => $owner,
+        ]);
+    }
+
+    public function actionUpdate($id = null)
+    {
+        if ($id != null) {
+            $model = $this->findModel($id);
+            $periods = SchedulePeriod::find()->where(['schedule_id'=>$model->id])->orderBy(['time_start' => SORT_ASC])->all();
+        } else
+        {
+            $model = new ScheduleSchedule();
+        }
+
+        $users = $this->module->userModel;
+        $users = new $users;
+        $time = ScheduleTime::find()->all();
+        $timeList = ArrayHelper::map($time,'id','time');
+        $targetList = [];
+        $days = [
+            'monday' => 0,
+            'tuesday' => 1,
+            'wednesday' => 2,
+            'thursday' => 3,
+            'friday' => 4,
+            'saturday' =>  5,
+            'sunday' => 6,
+        ];
+
         if ($this->module->sourceList) {
             $targetList = $this->module->sourceList;
         }
+
         if ($model->load(Yii::$app->request->post())) {
-
-            $model->owner_id = \Yii::$app->user->id;
-
-
-
+            if (empty($model->owner_id)) {
+                $model->owner_id = \Yii::$app->user->id;
+            }
             if ($model->save()) {
+                $this->savePeriod($model->periodsArray,$model->id);
                 return $this->redirect('index');
             }
-
-
-        } else {
-            return $this->render('create', [
-                'model' => $model,
-                'targetList' => $targetList,
-                'days' => $days,
-            ]);
-        }
-    }
-
-    /**
-     * Updates an existing SchedulePeriod model.
-     * If update is successful, the browser will be redirected to the 'view' page.
-     * @param integer $id
-     * @return mixed
-     */
-    public function actionUpdate($id)
-    {
-        $model = $this->findModel($id);
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->render('update', [
                 'model' => $model,
+                'targetList' => $targetList,
+                'timeList' => $timeList,
+                'days' => $days,
+                'periods' => $periods,
+                'users' => $users::find()->all(),
             ]);
         }
     }
 
     /**
-     * Deletes an existing SchedulePeriod model.
+     * Deletes an existing ScheduleSchedule model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
@@ -128,15 +157,15 @@ class ScheduleController extends Controller
     }
 
     /**
-     * Finds the SchedulePeriod model based on its primary key value.
+     * Finds the ScheduleSchedule model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return SchedulePeriod the loaded model
+     * @return ScheduleSchedule the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = SchedulePeriod::findOne($id)) !== null) {
+        if (($model = ScheduleSchedule::findOne($id)) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
@@ -154,5 +183,46 @@ class ScheduleController extends Controller
             'status' => 'success',
             'list' => $list,
         ];
+    }
+
+    public function actionSaveRecord()
+    {
+        $record = Yii::$app->request->post('record');
+        $recordId = \Yii::$app->schedule->addRecord($record['scheduleId'],$record['periodId']);
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        if ($recordId){
+            return [
+                'status' => 'success',
+                'cancelUrl' => Url::to(['/schedule/schedule/delete-record']),
+            ];
+        } else {
+            return [
+                'status' => 'error',
+            ];
+        }
+
+    }
+
+    public function actionDeleteRecord()
+    {
+        $record = Yii::$app->request->post('record');
+        $success = \Yii::$app->schedule->deleteRecord($record['scheduleId'],$record['periodId']);
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        if ($success) {
+            return [
+                'status' => 'success',
+                'saveUrl' => Url::to(['/schedule/schedule/save-record']),
+            ];
+        } else {
+            return [
+                'status' => 'error',
+            ];
+        }
+    }
+
+    private function savePeriod($periodsArray,$scheduleId){
+        $days = json_decode($periodsArray);
+        $times = ArrayHelper::map(ScheduleTime::find()->all(),'time','id');
+        $periodId = \Yii::$app->schedule->addPeriod($days,$scheduleId,$times);
     }
 }

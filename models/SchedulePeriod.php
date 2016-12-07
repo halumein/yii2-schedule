@@ -2,22 +2,18 @@
 
 namespace halumein\schedule\models;
 
+use pistol88\worksess\models\Schedule;
 use Yii;
 
 /**
  * This is the model class for table "schedule_period".
  *
  * @property integer $id
- * @property integer $owner_id
- * @property string $target_model
- * @property integer $target_id
- * @property string $monday
- * @property string $tuesday
- * @property string $wednesday
- * @property string $thursday
- * @property string $friday
- * @property string $saturday
- * @property string $sunday
+ * @property integer $schedule_id
+ * @property integer $day_id
+ * @property integer $time_start
+ * @property integer $time_stop
+ * @property string $status
  */
 class SchedulePeriod extends \yii\db\ActiveRecord
 {
@@ -35,10 +31,12 @@ class SchedulePeriod extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['owner_id', 'target_model', 'target_id'], 'required'],
-            [['owner_id', 'target_id'], 'integer'],
-            [['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'], 'string'],
-            [['target_model'], 'string', 'max' => 255],
+            [['schedule_id', 'day_id', 'time_start', 'time_stop', 'status'], 'required'],
+            [['schedule_id', 'day_id', 'time_start', 'time_stop', 'amount'], 'integer'],
+            [['status'], 'string'],
+            [['schedule_id'], 'exist', 'skipOnError' => true, 'targetClass' => ScheduleSchedule::className(), 'targetAttribute' => ['schedule_id' => 'id']],
+            [['time_start'], 'exist', 'skipOnError' => true, 'targetClass' => ScheduleTime::className(), 'targetAttribute' => ['time_start' => 'id']],
+            [['time_stop'], 'exist', 'skipOnError' => true, 'targetClass' => ScheduleTime::className(), 'targetAttribute' => ['time_stop' => 'id']],
         ];
     }
 
@@ -49,16 +47,21 @@ class SchedulePeriod extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'owner_id' => 'Owner ID',
-            'target_model' => 'Target Model',
-            'target_id' => 'Target ID',
-            'monday' => 'Monday',
-            'tuesday' => 'Tuesday',
-            'wednesday' => 'Wednesday',
-            'thursday' => 'Thursday',
-            'friday' => 'Friday',
-            'saturday' => 'Saturday',
-            'sunday' => 'Sunday',
+            'schedule_id' => 'Schedule ID',
+            'day_id' => 'Day ID',
+            'time_start' => 'Time Start',
+            'time_stop' => 'Time Stop',
+            'status' => 'Status',
+            'amount' => 'Amount',
         ];
+    }
+    
+    public function getPeriods($dayId)
+    {
+        return $this->find()->where(['day_id' => $dayId])->all();
+    }
+
+    public function getRecordByUserId() {
+        return ScheduleRecord::find()->where(['period_id' => $this->id, 'user_id' => \Yii::$app->user->id])->all();
     }
 }

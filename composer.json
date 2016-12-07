@@ -27,5 +27,8 @@
         "psr-4": {
             "halumein\\schedule\\": ""
         }
+    },
+    "extra": {
+        "bootstrap": "halumein\\schedule\\Bootstrap"
     }
 }
