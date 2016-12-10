@@ -8,7 +8,9 @@ use yii\helpers\Url;
 /* @var $this yii\web\View */
 /* @var $model app\vendor\halumein\schedule\models\ScheduleSchedule */
 
-$this->title = 'Расписания';
+$this->title = 'Список расписаний';
+$this->params['breadcrumbs'][] = ['label' => 'Расписания', 'url' => ['index']];
+$this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="schedule-list">
  <?php

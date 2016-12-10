@@ -5,3 +5,42 @@
 .record:hover {
     cursor: pointer;
 }
+
+.schedule-table .day {
+    width: 100px;
+}
+
+.schedule-table .actions {
+    width:250px;
+}
+
+.set-period-block .row div {
+    display: inline-block;
+}
+
+.added-period:first-child {
+    margin-top: 15px;
+}
+
+.added-period {
+    width: 300px;
+    margin: 0 auto;
+    text-align: right;
+    margin-bottom: 15px;
+}
+
+.added-period div {
+    margin: 0 5px 0 0;
+    /*display: inline-block;*/
+    vertical-align: middle;
+    float: right;
+}
+
+.added-period div input[type=checkbox] {
+    width: 14px;
+    margin: 0 auto;
+}
+
+/*.schedule-table .places {*/
+    /*width:100px;*/
+/*}*/

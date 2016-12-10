@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\grid\GridView;
+use yii\helpers\Url;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\vendor\halumein\schedule\models\search\ScheduleScheduleSearch */
@@ -12,7 +13,7 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="schedule-schedule-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+    <h1><a href="<?= Url::to(['schedule/schedule-list'])?>"><?= Html::encode($this->title) ?></a></h1>
     <p>
         <?= Html::a('Создать расписание', ['update'], ['class' => 'btn btn-success']) ?>
     </p>

@@ -13,6 +13,8 @@ use yii\helpers\ArrayHelper;
 /* @var $model app\vendor\halumein\schedule\models\ScheduleSchedule */
 
 $this->title = (!empty($model->name)) ? $model->name : 'Новое расписание';
+$this->params['breadcrumbs'][] = ['label' => 'Расписания', 'url' => ['index']];
+$this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="schedule-schedule-update">
     <h1><?= Html::encode($this->title) ?></h1>
@@ -65,17 +67,26 @@ $this->title = (!empty($model->name)) ? $model->name : 'Новое распис�
                     <div id="<?= $day ?>" class="tab-pane fade in <?=$day === 'monday' ? 'active' : ''?>"
                          data-role="schedule-day-period"
                          data-day-id="<?= $dayStat ?>">
-                        <div class="time text-center" data-role="time-block" data-target="<?= $day ?>">
+                        <div class="time" data-role="time-block" data-target="<?= $day ?>">
                             <?php if (!empty($periods)) {
                                 foreach ($periods as $period) {
                                     if ($period['status'] != 'deleted') {
                                         if ($period['day_id'] == $dayStat) {?>
-                                            <div class="row" data-role="time-row" data-period-id="<?= $period['id'] ?>">
-                                                <span data-role="schedule-day-item" style=""><?=$timeList[$period['time_start']]?> - <?=$timeList[$period['time_stop']]?></span>
-                                                <input type="text" data-role="schedule-day-item-amount" value="<?=$period['amount']?>">
-                                                <input type="checkbox" data-role="schedule-day-item-status" data-status="<?= ($period['status']=='active') ? 'active' : 'inactive';?>"
-                                                    <?= ($period['status']=='active') ? 'checked' : '';?>>
-                                                <span class="btn glyphicon glyphicon-remove" data-role="removePeriod" data-target-period="<?= $period['id'] ?>"></span>
+                                            <div class="row added-period" data-role="time-row" data-period-id="<?= $period['id'] ?>">
+                                                <div>
+                                                    <span class="form-control btn btn-danger" data-role="removePeriod" data-target-period="<?= $period['id'] ?>">X</span>
+                                                </div>
+                                                <div>
+                                                    <input class="form-control" type="checkbox" data-role="schedule-day-item-status"
+                                                           data-status="<?= ($period['status']=='active') ? 'active' : 'inactive';?>"
+                                                        <?= ($period['status']=='active') ? 'checked' : '';?>>
+                                                </div>
+                                                <div>
+                                                    <input class="form-control" type="text" data-role="schedule-day-item-amount" placeholder="Места" style="width:100px;" value="<?=$period['amount']?>">
+                                                </div>
+                                                <div>
+                                                    <span  data-role="schedule-day-item" style=""><?=$timeList[$period['time_start']]?> - <?=$timeList[$period['time_stop']]?></span>
+                                                </div>
                                             </div>
                                         <?php }
                                     }
@@ -86,10 +97,17 @@ $this->title = (!empty($model->name)) ? $model->name : 'Новое распис�
                 <?php } ?>
             </div>
             <div class="set-period-block col-sm-12 text-center">
-                <?= Html::dropDownList('setTimeStart',null,$timeList); ?>
-                -
-                <?= Html::dropDownList('setTimeStop',null,$timeList); ?>
-                <span class="glyphicon glyphicon-plus-sign" data-role="addTime"></span>
+                <div class="row">
+                    <div>
+                        <?= Html::dropDownList('setTimeStart',null,$timeList,['class' => 'form-control']); ?>
+                    </div>
+                    <div>
+                        <?= Html::dropDownList('setTimeStop',null,$timeList,['class' => 'form-control']); ?>
+                    </div>
+                    <div>
+                        <span class="btn btn-success" data-role="addTime">+</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

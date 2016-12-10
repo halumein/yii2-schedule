@@ -61,7 +61,14 @@ class SchedulePeriod extends \yii\db\ActiveRecord
         return $this->find()->where(['day_id' => $dayId])->all();
     }
 
-    public function getRecordByUserId() {
+    public function getRecords()
+    {
+        return ScheduleRecord::find()->where(['period_id' => $this->id])->all();    
+    }
+    
+    
+    public function getRecordByUserId() 
+    {
         return ScheduleRecord::find()->where(['period_id' => $this->id, 'user_id' => \Yii::$app->user->id])->all();
     }
 }

@@ -23,7 +23,8 @@ usesgraphcrt.schedule = {
             $submitBtn = $('[data-role=submitBtn]'),
             $periodsArrayField = $('[data-role=periods-array]'),
             $removePeriodBtn = $('[data-role=removePeriod]'),
-            $sendRecord = $('[data-role=send-record]');
+            $sendRecord = $('[data-role=send-record]'),
+            $updateRecord = $('[data-role=update-record]');
 
         $timeStartSelect.on('change',function () {
             $timeStart['time'] = $('[name=setTimeStart] option:selected').text();
@@ -51,8 +52,7 @@ usesgraphcrt.schedule = {
         });
 
         $(document).on('click','[data-role=removePeriod]',function () {
-            console.log('test');
-            $(this).parent()
+            $(this).closest('.added-period')
                 .addClass('hidden')
                 .find('[data-role=schedule-day-item-status]')
                 .attr('data-status','deleted');
@@ -62,8 +62,26 @@ usesgraphcrt.schedule = {
             e.preventDefault();
             var data = usesgraphcrt.schedule.getSchedulePeriod();
             $periodsArrayField.val(JSON.stringify(data));
-            // console.log(data);
+             //console.log(data);
             $ScheduleForm.submit();
+        });
+        
+        $updateRecord.on('click',function(){   
+            self = this;
+            data= {
+                recordId: $(self).data('record-id'),
+                status: $(self).data('status'),
+                periodId: $(self).closest('[data-role=target]').data('period-id'),
+                scheduleId: $(self).closest('[data-role=target]').data('schedule-id'),
+            };
+            url = $(self).closest('[data-role=target]').data('url');
+            if ($(self).data('status') != 'denied') {
+                usesgraphcrt.schedule.updateRecord(url,data,self);
+            } else if ($(self).data('status') == 'denied') {
+                if (confirm('Вы уверены, что хотите заблокировать заявку пользователя?')) {
+                    usesgraphcrt.schedule.updateRecord(url,data,self);
+                }
+            }
         });
 
         $sendRecord.on('click',function () {
@@ -72,45 +90,25 @@ usesgraphcrt.schedule = {
                 scheduleId: $(self).data('schedule-id'),
                 periodId: $(self).data('period-id')
             };
-            if ($(self).data('status') == 'active') {
-                console.log('active');
-                console.log($(self).data('url'));
-                $.ajax({
-                    type: "POST",
-                    url: $(self).data('url'),
-                    data: {record:data},
-                    success: function (response) {
-                        if (response.status == 'success') {
-                            $(self).text('Отменить заявку');
-                            $(self).data('status', 'in process');
-                            $(self).data('url',response.cancelUrl);
-                        }
-                    }
-                });
-            } else if (($(self).data('status') == 'in process') || ($(self).data('status') == 'confirmed')) {
-                $.ajax({
-                    type: "POST",
-                    url: $(self).data('url'),
-                    data: {record:data},
-                    success: function (response) {
-                        if (response.status == 'success') {
-                            $(self).text('Подать заявку');
-                            $(self).data('status', 'active');
-                            $(self).data('url',response.saveUrl);
-                        }
-                    }
-                });
+            switch ($(self).data('status')) {
+                case 'active':
+                    usesgraphcrt.schedule.sendRequest(data, self);
+                    break;
+                case 'in process':
+                case 'confirmed':
+                    usesgraphcrt.schedule.cancelRequest(data, self);
+                    break;
             }
         });
     },
 
     addTime: function (time) {
-        $('.tab-content .active [data-role=time-block]').append($('<div class="row"' +
+        $('.tab-content .active [data-role=time-block]').append($('<div class="row added-period"' +
             ' data-role="time-row" data-period-id=""></div>')
-            .append('<span data-role="schedule-day-item" style="">'+time+'</span>')
-            .append('<input type="text" data-role="schedule-day-item-amount">')
-            .append('<input type="checkbox" data-role="schedule-day-item-status">')
-            .append('<span class="btn glyphicon glyphicon-remove" data-role="removePeriod"></span><br>')
+            .append('<div><span class="form-control btn btn-danger" data-role="removePeriod">X</span></div>')
+            .append('<div><input class="form-control" type="checkbox" data-role="schedule-day-item-status"></div>')
+            .append('<div><input class="form-control" type="text" data-role="schedule-day-item-amount" placeholder="Места" style="width:100px;"></div>')
+            .append('<div><span data-role="schedule-day-item" style="">'+time+'</span></div>')
         );
 
     },
@@ -145,9 +143,10 @@ usesgraphcrt.schedule = {
                     periodId = $($value).data('period-id');
                 }
                 time = $(this).find('[data-role=schedule-day-item]').text();
+                console.log($(this).find('[data-role=schedule-day-item]'));
                 amount = $(this).find('[data-role=schedule-day-item-amount]').val();
                 if ($(this).find('[data-role=schedule-day-item-status]').prop('checked')){
-                    if ($(this).find('[data-role=schedule-day-item-status]').data('status')=='deleted')
+                    if ($(this).find('[data-role=schedule-day-item-status]').data('status') == 'deleted')
                     {
                         status = 'deleted';
                     }
@@ -182,6 +181,66 @@ usesgraphcrt.schedule = {
             }
         });
     },
+
+    sendRequest: function (data,self) {
+        $.ajax({
+            type: "POST",
+            url: $(self).data('url'),
+            data: {record:data},
+            success: function (response) {
+                if (response.status == 'success') {
+                    $(self).closest('.user-record').find('.text-status').text('Заявка отправлена.  | ');
+                    $(self).text('Отменить');
+                    $(self).data('status', 'in process');
+                    $(self).data('url',response.cancelUrl);
+                }
+            }
+        });
+    },
+
+    cancelRequest: function (data,self) {
+        $.ajax({
+            type: "POST",
+            url: $(self).data('url'),
+            data: {record:data},
+            success: function (response) {
+                if (response.status == 'success') {
+                    $(self).closest('.user-record').find('.text-status').text('');
+                    $(self).text('Подать заявку');
+                    $(self).data('status', 'active');
+                    $(self).data('url',response.saveUrl);
+                }
+            }
+        });
+    },
+
+    updateRecord: function (url,data,self) {
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: {updateRecord:data},
+            success: function (response) {
+                if ((response.status == 'success') || (response.status == 'true')) {
+                    switch ($(self).data('status')) {
+                        case 'confirmed':
+                            $(self).text('Отменить');
+                            $(self).data('status', 'canceled');
+                            $(self).closest('.period-row').find('[data-role=places]').text(response.places);
+                            break;
+                        case 'canceled':
+                            $(self).text('Подтвердить');
+                            $(self).data('status', 'confirmed');
+                            $(self).closest('.period-row').find('[data-role=places]').text(response.places);
+                            break;
+                        case 'denied':
+                            $(self).closest('.period-row').find('[data-role=places]').text(response.places);
+                            $(self).closest('.user-record').remove();
+                            break;
+                    }
+                }
+            }
+        });
+    }
 
 };
 usesgraphcrt.schedule.init();

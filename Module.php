@@ -2,6 +2,9 @@
 
 namespace halumein\schedule;
 
+use Yii;
+
+
 class Module extends \yii\base\Module
 {
     public $componentList = null;
@@ -14,4 +17,5 @@ class Module extends \yii\base\Module
         parent::init();
 
     }
+    
 }

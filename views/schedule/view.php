@@ -18,7 +18,7 @@ $this->title = (!empty($model->name)) ? $model->name : 'Какое-то расп
             <?php foreach ($days as $day => $dayId) { ?>
                 <tr class="info">
                     <th data-day="<?= $dayId ?>"><?= $day ?></th>
-                    <th>Действие</th>
+                    <th>sadfasdfgasdfasdf</th>
                     <th>Места</th>
                 </tr>
                 <?php foreach ($model->getActivePeriods($dayId)->all() as $period) { ?>

@@ -33,7 +33,7 @@ class ScheduleController extends Controller
                     [
                         'allow' => true,
                         'roles' => ['@'],
-                        'actions' => ['index', 'update', 'delete','get-targets-by-model','view','schedule-list','save-record','delete-record']
+                        'actions' => ['index', 'update', 'delete','get-targets-by-model','view','schedule-list','save-record','delete-record','update-record']
                     ],
 
                 ],
@@ -68,17 +68,15 @@ class ScheduleController extends Controller
 
     public function actionView($id = null)
     {
-        var_dump(\Yii::$app->has('schedule'));
-        die;
         $owner = false;
         $days = [
-            'monday' => 0,
-            'tuesday' => 1,
-            'wednesday' => 2,
-            'thursday' => 3,
-            'friday' => 4,
-            'saturday' =>  5,
-            'sunday' => 6,
+            'Понедельник' => 0,
+            'Вторник' => 1,
+            'Среда' => 2,
+            'Четверг' => 3,
+            'Пятница' => 4,
+            'Суббота' =>  5,
+            'Воскресенье' => 6,
         ];
         if (ScheduleUserToSchedule::find()->where(['schedule_id'=>$id, 'user_id'=>\Yii::$app->user->id])->one()) {
             $owner = true;
@@ -86,12 +84,20 @@ class ScheduleController extends Controller
         $model = ScheduleSchedule::findOne($id);
         $time = ScheduleTime::find()->all();
         $timeList = ArrayHelper::map($time,'id','time');
-        return $this->render('view',[
-            'model' => $model,
-            'days' => $days,
-            'timeList' => $timeList,
-            'owner' => $owner,
-        ]);
+        if (!$owner) {
+            return $this->render('_user',[
+                'model' => $model,
+                'days' => $days,
+                'timeList' => $timeList,
+            ]);
+        } else {
+            return $this->render('_owner',[
+                'model' => $model,
+                'days' => $days,
+                'timeList' => $timeList,
+            ]);
+        }
+
     }
 
     public function actionUpdate($id = null)
@@ -176,7 +182,9 @@ class ScheduleController extends Controller
         $list = [];
         $modelName = Yii::$app->request->post('model');
         $model = new $modelName;
-        $model = $model->getActive();
+//        var_dump($model);
+//        die;
+        $model = $model->find()->all();
         $list = ArrayHelper::map($model,'id','name');
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
         return [
@@ -188,7 +196,7 @@ class ScheduleController extends Controller
     public function actionSaveRecord()
     {
         $record = Yii::$app->request->post('record');
-        $recordId = \Yii::$app->schedule->addRecord($record['scheduleId'],$record['periodId']);
+        $recordId = \Yii::$app->schedule->addRecord( (int)$record['scheduleId'],(int)$record['periodId']);
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
         if ($recordId){
             return [
@@ -212,6 +220,32 @@ class ScheduleController extends Controller
             return [
                 'status' => 'success',
                 'saveUrl' => Url::to(['/schedule/schedule/save-record']),
+            ];
+        } else {
+            return [
+                'status' => 'error',
+            ];
+        }
+    }
+
+    public function actionUpdateRecord()
+    {
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        $record = Yii::$app->request->post('updateRecord');
+        if (ScheduleRecord::find()->where(['id' => $record['recordId'],'status' => $record['status']])->one()) {
+            $places = \Yii::$app->schedule->getPlaces($record['scheduleId'],$record['periodId']);
+            return [
+              'status' => 'true',
+              'places' => $places,
+            ];
+        }
+        $success = \Yii::$app->schedule->updateRecord($record['recordId'],$record['status']);
+        $places = \Yii::$app->schedule->getPlaces($record['scheduleId'],$record['periodId']);
+        if ($success) {
+            
+            return [
+                'status' => 'success',
+                'places' => $places,
             ];
         } else {
             return [
