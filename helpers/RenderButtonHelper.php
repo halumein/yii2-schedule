@@ -124,5 +124,13 @@ class RenderButtonHelper
         
         return $block;
     }
+    
+    static function renderOwnerUserRecord($record)
+    {
+        $users = ArrayHelper::map(User::getActive(),'id','name');
+        $username = '<div><label>'.$users[$record->user_id].'</label></div>';
+        
+        return $username;
+    }
 
 }
