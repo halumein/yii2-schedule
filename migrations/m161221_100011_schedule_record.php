@@ -3,7 +3,7 @@
 use yii\db\Schema;
 use yii\db\Migration;
 
-class m161203_094111_schedule_record extends Migration
+class m161221_100011_schedule_record extends Migration
 {
 
     public function init()
@@ -23,13 +23,15 @@ class m161203_094111_schedule_record extends Migration
                 'user_id'=> $this->integer(11)->notNull(),
                 'schedule_id'=> $this->integer(11)->notNull(),
                 'period_id'=> $this->integer(11)->notNull(),
-                'status'=> $this->string()->notNull(),
+                'status'=> $this->string()->notNull()->defaultValue('in process'),
             ],$tableOptions
         );
+        $this->createIndex('user_id','{{%schedule_record}}','user_id,schedule_id,period_id',true);
     }
 
     public function safeDown()
     {
+        $this->dropIndex('user_id', '{{%schedule_record}}');
         $this->dropTable('{{%schedule_record}}');
     }
 }
