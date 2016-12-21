@@ -6,35 +6,26 @@ usesgraphcrt.schedule = {
 
     init: function () {
         csrfToken = $('meta[name=csrf-token]').attr("content"),
-            $ScheduleForm = $('[data-role=schedule-form]');
+        $ScheduleForm = $('[data-role=schedule-form]'),
         $selectTargetModel = $('[data-role=targetModelList]'),
-            $selectTargetId = $('[data-role=targetId]'),
-            $addTime = $('[data-role=addTime]'),
-            $timeInput = $('[data-role=getTime]'),
-            $timeStartSelect = $('[name=setTimeStart]'),
-            $timeStopSelect = $('[name=setTimeStop]'),
-            $timeStart = {},
-            $timeStop = {},
-            $timeStart['time'] = $('[name=setTimeStart] option:selected').text(),
-            $timeStop['time'] = $('[name=setTimeStop] option:selected').text(),
-            $timeStart['id'] = $('[name=setTimeStart] option:selected').val(),
-            $timeStop['id'] =  $('[name=setTimeStop] option:selected').val(),
-            $timeRow = $('[data-role=time-row]'),
-            $submitBtn = $('[data-role=submitBtn]'),
-            $periodsArrayField = $('[data-role=periods-array]'),
-            $removePeriodBtn = $('[data-role=removePeriod]'),
-            $sendRecord = $('[data-role=send-record]'),
-            $updateRecord = $('[data-role=update-record]');
+        $selectTargetId = $('[data-role=targetId]'),
+        $addTime = $('[data-role=addTime]'),
+        $timeInput = $('[data-role=getTime]'),
+        $timeStartSelect = $('[name=setTimeStart]'),
+        $timeStopSelect = $('[name=setTimeStop]'),
+        $timeStart = {},
+        $timeStop = {},
+        $timeStart['time'] = $('[name=setTimeStart] option:selected').text(),
+        $timeStop['time'] = $('[name=setTimeStop] option:selected').text(),
+        $timeStart['id'] = $('[name=setTimeStart] option:selected').val(),
+        $timeStop['id'] =  $('[name=setTimeStop] option:selected').val(),
+        $timeRow = $('[data-role=time-row]'),
+        $submitBtn = $('[data-role=submitBtn]'),
+        $periodsArrayField = $('[data-role=periods-array]'),
+        $removePeriodBtn = $('[data-role=removePeriod]'),
+        $sendRecord = $('[data-role=send-record]'),
+        $updateRecord = $('[data-role=update-record]');
 
-        $timeStartSelect.on('change',function () {
-            $timeStart['time'] = $('[name=setTimeStart] option:selected').text();
-            $timeStart['id'] = $('[name=setTimeStart] option:selected').val();
-        });
-
-        $timeStopSelect.on('change',function () {
-            $timeStop['time'] = $('[name=setTimeStop] option:selected').text();
-            $timeStop['id'] =  $('[name=setTimeStop] option:selected').val();
-        });
 
         $selectTargetModel.on('change',function () {
             usesgraphcrt.schedule.getTargetId($selectTargetModel.data('url'),$selectTargetModel.val(),$selectTargetId.data('id'));
@@ -42,9 +33,17 @@ usesgraphcrt.schedule = {
 
         $addTime.on('click',function () {
             time = '';
-            if ($timeStart['id'] < $timeStop['id']) {
+
+            $timeStart['time'] = $('[name=setTimeStart] option:selected').text();
+            $timeStart['id'] = $('[name=setTimeStart] option:selected').val();
+
+            $timeStop['time'] = $('[name=setTimeStop] option:selected').text();
+            $timeStop['id'] =  $('[name=setTimeStop] option:selected').val();
+
+            if (+$timeStart['id'] < +$timeStop['id']) {
                 time = $timeStart['time'] + ' - '+ $timeStop['time'];
                 usesgraphcrt.schedule.addTime(time);
+                $timeStartSelect.val($timeStop['id']);
             } else {
                 $('#alertBtn').click();
                 // alert('Период задан не верно!');
@@ -62,11 +61,11 @@ usesgraphcrt.schedule = {
             e.preventDefault();
             var data = usesgraphcrt.schedule.getSchedulePeriod();
             $periodsArrayField.val(JSON.stringify(data));
-             //console.log(data);
+            // console.log(data);
             $ScheduleForm.submit();
         });
-        
-        $updateRecord.on('click',function(){   
+
+        $updateRecord.on('click',function(){
             self = this;
             data= {
                 recordId: $(self).data('record-id'),
@@ -106,7 +105,7 @@ usesgraphcrt.schedule = {
         $('.tab-content .active [data-role=time-block]').append($('<div class="row added-period"' +
             ' data-role="time-row" data-period-id=""></div>')
             .append('<div><span class="form-control btn btn-danger" data-role="removePeriod">X</span></div>')
-            .append('<div><input class="form-control" type="checkbox" data-role="schedule-day-item-status"></div>')
+            .append('<div><input class="form-control" type="checkbox" data-role="schedule-day-item-status" checked></div>')
             .append('<div><input class="form-control" type="text" data-role="schedule-day-item-amount" placeholder="Места" style="width:100px;"></div>')
             .append('<div><span data-role="schedule-day-item" style="">'+time+'</span></div>')
         );
@@ -245,4 +244,3 @@ usesgraphcrt.schedule = {
 };
 usesgraphcrt.schedule.init();
 usesgraphcrt.schedule.getTargetId($selectTargetModel.data('url'),$selectTargetModel.val(),$selectTargetId.data('id'));
-

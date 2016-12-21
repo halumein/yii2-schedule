@@ -27,7 +27,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="row container-fluid">
         <div class="col-md-4">
             <?= $form->field($model,'name')->input('text')->label('Название расписания'); ?>
-            
+
             <?= $form->field($model, 'target_model')->dropDownList($targetList,[
                 'data-role' => 'targetModelList',
                 'data-url' => Url::to(['/schedule/schedule/get-targets-by-model']),
@@ -41,7 +41,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <?php
             echo $form->field($model, 'user_ids')->label('Пользователи, которые имеют доступ')
                 ->widget(Select2::classname(), [
-                    'data' => ArrayHelper::map($users, 'faq_id', 'faq_title'),
+                    'data' => ArrayHelper::map($users, 'id', 'name'),
                     'language' => 'ru',
                     'options' => ['multiple' => true, 'placeholder' => 'Выберите пользователей ...'],
                     'pluginOptions' => [
@@ -49,7 +49,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     ],
                 ]);
             ?>
-            
+
             <?= $form->field($model,'periodsArray')->input('hidden',['data-role' => 'periods-array'])->label(false); ?>
         </div>
         <div class="col-md-8 text-center">
@@ -96,6 +96,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     </div>
                 <?php } ?>
             </div>
+            <br>
             <div class="set-period-block col-sm-12 text-center">
                 <div class="row">
                     <div>
