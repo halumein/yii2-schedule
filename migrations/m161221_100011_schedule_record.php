@@ -26,7 +26,7 @@ class m161221_100011_schedule_record extends Migration
                 'status'=> $this->string()->notNull()->defaultValue('in process'),
             ],$tableOptions
         );
-        $this->createIndex('user_id','{{%schedule_record}}','user_id,schedule_id,period_id',true);
+
     }
 
     public function safeDown()

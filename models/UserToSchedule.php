@@ -11,7 +11,7 @@ use Yii;
  * @property integer $user_id
  * @property integer $schedule_id
  */
-class ScheduleUserToSchedule extends \yii\db\ActiveRecord
+class UserToSchedule extends \yii\db\ActiveRecord
 {
     /**
      * @inheritdoc

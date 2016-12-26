@@ -41,6 +41,6 @@
     margin: 0 auto;
 }
 
-/*.schedule-table .places {*/
-    /*width:100px;*/
-/*}*/
+.href {
+    cursor: pointer;
+}

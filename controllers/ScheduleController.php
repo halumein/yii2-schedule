@@ -3,12 +3,12 @@
 namespace halumein\schedule\controllers;
 
 use Yii;
-use halumein\schedule\models\ScheduleSchedule;
-use halumein\schedule\models\SchedulePeriod;
-use halumein\schedule\models\ScheduleTime;
-use halumein\schedule\models\ScheduleRecord;
-use halumein\schedule\models\search\ScheduleScheduleSearch;
-use halumein\schedule\models\ScheduleUserToSchedule;
+use halumein\schedule\models\Schedule;
+use halumein\schedule\models\Period;
+use halumein\schedule\models\Time;
+use halumein\schedule\models\Record;
+use halumein\schedule\models\search\ScheduleSearch;
+use halumein\schedule\models\UserToSchedule;
 use yii\helpers\Json;
 use yii\helpers\Url;
 use yii\web\Controller;
@@ -33,7 +33,7 @@ class ScheduleController extends Controller
                     [
                         'allow' => true,
                         'roles' => ['@'],
-                        'actions' => ['index', 'update', 'delete','get-targets-by-model','view','schedule-list','save-record','delete-record','update-record']
+                        'actions' => ['index', 'update', 'delete','get-targets-by-model','view','schedule-list','client-choose-ajax']
                     ],
 
                 ],
@@ -49,7 +49,7 @@ class ScheduleController extends Controller
 
     public function actionIndex()
     {
-        $searchModel = new ScheduleScheduleSearch();
+        $searchModel = new ScheduleSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -60,7 +60,7 @@ class ScheduleController extends Controller
 
     public function actionScheduleList()
     {
-        $schedules = ScheduleSchedule::find()->all();
+        $schedules = Schedule::find()->all();
         return $this->render('schedule-list',[
             'schedules' => $schedules,
         ]);
@@ -78,11 +78,11 @@ class ScheduleController extends Controller
             'Суббота' =>  5,
             'Воскресенье' => 6,
         ];
-        if (ScheduleUserToSchedule::find()->where(['schedule_id'=>$id, 'user_id'=>\Yii::$app->user->id])->one()) {
+        if (UserToSchedule::find()->where(['schedule_id'=>$id, 'user_id'=>\Yii::$app->user->id])->one()) {
             $owner = true;
         }
-        $model = ScheduleSchedule::findOne($id);
-        $time = ScheduleTime::find()->all();
+        $model = Schedule::findOne($id);
+        $time = Time::find()->all();
         $timeList = ArrayHelper::map($time,'id','time');
         if (!$owner) {
             return $this->render('_user',[
@@ -104,15 +104,17 @@ class ScheduleController extends Controller
     {
         if ($id != null) {
             $model = $this->findModel($id);
-            $periods = SchedulePeriod::find()->where(['schedule_id'=>$model->id])->orderBy(['time_start' => SORT_ASC])->all();
+            $periods = Period::find()->where(['schedule_id'=>$model->id])->orderBy(['time_start' => SORT_ASC])->all();
         } else
         {
-            $model = new ScheduleSchedule();
+            $model = new Schedule();
         }
+
+
 
         $users = $this->module->userModel;
         $users = new $users;
-        $time = ScheduleTime::find()->all();
+        $time = Time::find()->all();
         $timeList = ArrayHelper::map($time,'id','time');
         $targetList = [];
         $days = [
@@ -133,6 +135,7 @@ class ScheduleController extends Controller
             if (empty($model->owner_id)) {
                 $model->owner_id = \Yii::$app->user->id;
             }
+
             if ($model->save()) {
                 $this->savePeriod($model->periodsArray,$model->id);
                 return $this->redirect('index');
@@ -150,7 +153,7 @@ class ScheduleController extends Controller
     }
 
     /**
-     * Deletes an existing ScheduleSchedule model.
+     * Deletes an existing Schedule model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
@@ -163,15 +166,15 @@ class ScheduleController extends Controller
     }
 
     /**
-     * Finds the ScheduleSchedule model based on its primary key value.
+     * Finds the Schedule model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return ScheduleSchedule the loaded model
+     * @return Schedule the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = ScheduleSchedule::findOne($id)) !== null) {
+        if (($model = Schedule::findOne($id)) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
@@ -193,70 +196,25 @@ class ScheduleController extends Controller
         ];
     }
 
-    public function actionSaveRecord()
+    public function actionClientChooseAjax()
     {
-        $record = Yii::$app->request->post('record');
-        $recordId = \Yii::$app->schedule->addRecord( (int)$record['scheduleId'],(int)$record['periodId']);
-        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-        if ($recordId){
-            return [
-                'status' => 'success',
-                'cancelUrl' => Url::to(['/schedule/schedule/delete-record']),
-            ];
-        } else {
-            return [
-                'status' => 'error',
-            ];
-        }
+        $model = $this->module->clientSearchModel;
 
-    }
+        $searchModel = new $model;
 
-    public function actionDeleteRecord()
-    {
-        $record = Yii::$app->request->post('record');
-        $success = \Yii::$app->schedule->deleteRecord($record['scheduleId'],$record['periodId']);
-        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-        if ($success) {
-            return [
-                'status' => 'success',
-                'saveUrl' => Url::to(['/schedule/schedule/save-record']),
-            ];
-        } else {
-            return [
-                'status' => 'error',
-            ];
-        }
-    }
+        $dataProvider = $searchModel->search(Yii::$app->request->getQueryParams());
 
-    public function actionUpdateRecord()
-    {
-        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-        $record = Yii::$app->request->post('updateRecord');
-        if (ScheduleRecord::find()->where(['id' => $record['recordId'],'status' => $record['status']])->one()) {
-            $places = \Yii::$app->schedule->getPlaces($record['scheduleId'],$record['periodId']);
-            return [
-              'status' => 'true',
-              'places' => $places,
-            ];
-        }
-        $success = \Yii::$app->schedule->updateRecord($record['recordId'],$record['status']);
-        $places = \Yii::$app->schedule->getPlaces($record['scheduleId'],$record['periodId']);
-        if ($success) {
-            
-            return [
-                'status' => 'success',
-                'places' => $places,
-            ];
-        } else {
-            return [
-                'status' => 'error',
-            ];
-        }
+        return $this->renderAjax('_clientChoose', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+            'periodId' => Yii::$app->request->get('periodId'),
+            'scheduleId' => Yii::$app->request->get('scheduleId'),
+        ]);
     }
 
     private function savePeriod($periodsArray,$scheduleId){
         $days = json_decode($periodsArray);
-        $times = ArrayHelper::map(ScheduleTime::find()->all(),'time','id');
+        $times = ArrayHelper::map(Time::find()->all(),'time','id');
         $periodId = \Yii::$app->schedule->addPeriod($days,$scheduleId,$times);
     }
 }

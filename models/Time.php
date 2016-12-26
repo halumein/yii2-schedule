@@ -10,7 +10,7 @@ use Yii;
  * @property integer $id
  * @property string $time
  */
-class ScheduleTime extends \yii\db\ActiveRecord
+class Time extends \yii\db\ActiveRecord
 {
     /**
      * @inheritdoc

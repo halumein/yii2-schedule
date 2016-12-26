@@ -7,7 +7,7 @@ use yii\widgets\DetailView;
 use yii\helpers\Url;
 use halumein\schedule\helpers\RenderButtonHelper;
 /* @var $this yii\web\View */
-/* @var $model app\vendor\halumein\schedule\models\ScheduleSchedule */
+/* @var $model app\vendor\halumein\schedule\models\Schedule */
 
 $this->title = (!empty($model->name)) ? $model->name : 'Какое-то расписание без названия';
 $this->params['breadcrumbs'][] = $this->title;
@@ -25,9 +25,11 @@ $this->params['breadcrumbs'][] = $this->title;
             <tr>
                 <td class="day"><?=$timeList[$period['time_start']]?> - <?=$timeList[$period['time_stop']]?></td>
                 <td class="actions">
-                    <?php if ($period->getRecordByUserId()){ foreach($period->getRecordByUserId() as $record) {
-                        echo RenderButtonHelper::renderButton($record,$model->id,$period->id);
-                    } } else {
+                    <?php if ($period->getRecordByUserId()) {
+                        foreach($period->getRecordByUserId() as $record) {
+                            echo RenderButtonHelper::renderButton($record,$model->id,$period->id);
+                        } 
+                    } else {
                         echo RenderButtonHelper::renderButton(null,$model->id,$period->id);
                     }
                     ?>

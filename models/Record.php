@@ -13,7 +13,7 @@ use Yii;
  * @property integer $period_id
  * @property string $status
  */
-class ScheduleRecord extends \yii\db\ActiveRecord
+class Record extends \yii\db\ActiveRecord
 {
     /**
      * @inheritdoc
@@ -29,7 +29,7 @@ class ScheduleRecord extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['user_id', 'schedule_id', 'period_id', 'status'], 'required'],
+            [['schedule_id', 'period_id', 'status'], 'required'],
             [['user_id', 'schedule_id', 'period_id'], 'integer'],
             [['status'], 'string'],
         ];
@@ -42,11 +42,13 @@ class ScheduleRecord extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'user_id' => 'User ID',
+            'user_id' => 'User Id', // Пользователь под которым создана запись
+            'client_model' => 'Client model', // Модель объекта записи
+            'client_id' => 'Client ID', // Ид объекта записи
             'schedule_id' => 'Schedule ID',
             'period_id' => 'Period ID',
             'status' => 'Status',
         ];
     }
-    
+
 }

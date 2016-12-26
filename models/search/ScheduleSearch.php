@@ -5,12 +5,12 @@ namespace halumein\schedule\models\search;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use halumein\schedule\models\ScheduleSchedule;
+use halumein\schedule\models\Schedule;
 
 /**
- * ScheduleScheduleSearch represents the model behind the search form of `app\vendor\halumein\schedule\models\ScheduleSchedule`.
+ * ScheduleSearch represents the model behind the search form of `app\vendor\halumein\schedule\models\Schedule`.
  */
-class ScheduleScheduleSearch extends ScheduleSchedule
+class ScheduleSearch extends Schedule
 {
     /**
      * @inheritdoc
@@ -41,7 +41,7 @@ class ScheduleScheduleSearch extends ScheduleSchedule
      */
     public function search($params)
     {
-        $query = ScheduleSchedule::find();
+        $query = Schedule::find();
 
         // add conditions that should always apply here
 

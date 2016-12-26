@@ -10,7 +10,7 @@ use yii\bootstrap\Modal;
 use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
 /* @var $this yii\web\View */
-/* @var $model app\vendor\halumein\schedule\models\ScheduleSchedule */
+/* @var $model app\vendor\halumein\schedule\models\Schedule */
 
 $this->title = (!empty($model->name)) ? $model->name : 'Новое расписание';
 $this->params['breadcrumbs'][] = ['label' => 'Расписания', 'url' => ['index']];

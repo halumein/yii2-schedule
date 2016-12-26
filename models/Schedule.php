@@ -14,7 +14,7 @@ use Yii;
  * @property string $name
  * @property string $date
  */
-class ScheduleSchedule extends \yii\db\ActiveRecord
+class Schedule extends \yii\db\ActiveRecord
 {
 
     public $periodsArray;
@@ -31,7 +31,7 @@ class ScheduleSchedule extends \yii\db\ActiveRecord
         ];
     }
 
-    
+
     public static function tableName()
     {
         return 'schedule_schedule';
@@ -64,28 +64,28 @@ class ScheduleSchedule extends \yii\db\ActiveRecord
     public function getUsers()
     {
         $userModel = Yii::$app->getModule('schedule')->userModel;
-        return $this->hasMany($userModel::className(), ['faq_id' => 'user_id'])->viaTable('schedule_user_to_schedule', ['schedule_id' => 'id']);
+        return $this->hasMany($userModel::className(), ['id' => 'user_id'])->viaTable('schedule_user_to_schedule', ['schedule_id' => 'id']);
     }
-    
+
    public function getPeriods()
    {
-       return $this->hasMany(SchedulePeriod::className(), ['schedule_id' => 'id']);
+       return $this->hasMany(Period::className(), ['schedule_id' => 'id']);
 
    }
 
    public function getActivePeriods($dayId = null)
    {
-       $periods = $this->hasMany(SchedulePeriod::className(), ['schedule_id' => 'id'])->andWhere(['status' => 'active']);
+       $periods = $this->hasMany(Period::className(), ['schedule_id' => 'id'])->andWhere(['status' => 'active']);
        if ($dayId >= 0){
            $periods->andWhere(['day_id' => $dayId]);
        }
-       
+
        return $periods->orderBy(['time_start' => SORT_ASC]);
    }
 
 
    public function getPlaceAmount()
    {
-       $amount = ScheduleRecord::find()->count(['schedule_id' => $this->id]);
+       $amount = Record::find()->count(['schedule_id' => $this->id]);
    }
 }

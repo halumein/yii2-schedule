@@ -1,9 +1,9 @@
 <?php
 namespace halumein\schedule\widgets;
 
-use halumein\schedule\models\SchedulePeriod;
-use halumein\schedule\models\ScheduleSchedule;
-use halumein\schedule\models\ScheduleTime;
+use halumein\schedule\models\Period;
+use halumein\schedule\models\Schedule;
+use halumein\schedule\models\Time;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\helpers\ArrayHelper;
@@ -26,9 +26,9 @@ class DaySchedule extends \yii\base\Widget
     
     public function run()
     {
-        $timeList = ArrayHelper::map(ScheduleTime::find()->all(),'id','time');
-        $schedule = ScheduleSchedule::findOne($this->scheduleId);
-        //$periods = SchedulePeriod::find()->where(['schedule_id' => $this -> scheduleId, 'day_id' => $this->days[date('l')]]);
+        $timeList = ArrayHelper::map(Time::find()->all(),'id','time');
+        $schedule = Schedule::findOne($this->scheduleId);
+        //$periods = Period::find()->where(['schedule_id' => $this -> scheduleId, 'day_id' => $this->days[date('l')]]);
         return $this->render('view',[
             'schedule' => $schedule,
             'timeList' => $timeList,

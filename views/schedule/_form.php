@@ -4,7 +4,7 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
 /* @var $this yii\web\View */
-/* @var $model app\vendor\halumein\schedule\models\ScheduleSchedule */
+/* @var $model app\vendor\halumein\schedule\models\Schedule */
 /* @var $form yii\widgets\ActiveForm */
 ?>
 

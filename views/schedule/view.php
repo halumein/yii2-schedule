@@ -7,7 +7,7 @@ use yii\widgets\DetailView;
 use yii\helpers\Url;
 use halumein\schedule\helpers\RenderButtonHelper;
 /* @var $this yii\web\View */
-/* @var $model app\vendor\halumein\schedule\models\ScheduleSchedule */
+/* @var $model app\vendor\halumein\schedule\models\Schedule */
 
 $this->title = (!empty($model->name)) ? $model->name : 'Какое-то расписание без названия';
 ?>
@@ -18,7 +18,7 @@ $this->title = (!empty($model->name)) ? $model->name : 'Какое-то расп
             <?php foreach ($days as $day => $dayId) { ?>
                 <tr class="info">
                     <th data-day="<?= $dayId ?>"><?= $day ?></th>
-                    <th>sadfasdfgasdfasdf</th>
+                    <th></th>
                     <th>Места</th>
                 </tr>
                 <?php foreach ($model->getActivePeriods($dayId)->all() as $period) { ?>
@@ -29,7 +29,6 @@ $this->title = (!empty($model->name)) ? $model->name : 'Какое-то расп
                                 echo RenderButtonHelper::renderButton($record);
                                 echo "<br>";
                             } ?>
-
                         </td>
                         <td>Мест: <?= $period->amount ?></td>
                     <?php }?>

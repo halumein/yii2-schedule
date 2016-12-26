@@ -2,7 +2,6 @@
 
 namespace halumein\schedule\models;
 
-use pistol88\worksess\models\Schedule;
 use Yii;
 
 /**
@@ -15,7 +14,7 @@ use Yii;
  * @property integer $time_stop
  * @property string $status
  */
-class SchedulePeriod extends \yii\db\ActiveRecord
+class Period extends \yii\db\ActiveRecord
 {
     /**
      * @inheritdoc
@@ -34,9 +33,8 @@ class SchedulePeriod extends \yii\db\ActiveRecord
             [['schedule_id', 'day_id', 'time_start', 'time_stop', 'status'], 'required'],
             [['schedule_id', 'day_id', 'time_start', 'time_stop', 'amount'], 'integer'],
             [['status'], 'string'],
-            [['schedule_id'], 'exist', 'skipOnError' => true, 'targetClass' => ScheduleSchedule::className(), 'targetAttribute' => ['schedule_id' => 'id']],
-            [['time_start'], 'exist', 'skipOnError' => true, 'targetClass' => ScheduleTime::className(), 'targetAttribute' => ['time_start' => 'id']],
-            [['time_stop'], 'exist', 'skipOnError' => true, 'targetClass' => ScheduleTime::className(), 'targetAttribute' => ['time_stop' => 'id']],
+            [['time_start'], 'exist', 'skipOnError' => true, 'targetClass' => Time::className(), 'targetAttribute' => ['time_start' => 'id']],
+            [['time_stop'], 'exist', 'skipOnError' => true, 'targetClass' => Time::className(), 'targetAttribute' => ['time_stop' => 'id']],
         ];
     }
 
@@ -55,7 +53,7 @@ class SchedulePeriod extends \yii\db\ActiveRecord
             'amount' => 'Amount',
         ];
     }
-    
+
     public function getPeriods($dayId)
     {
         return $this->find()->where(['day_id' => $dayId])->all();
@@ -63,12 +61,12 @@ class SchedulePeriod extends \yii\db\ActiveRecord
 
     public function getRecords()
     {
-        return ScheduleRecord::find()->where(['period_id' => $this->id])->all();    
+        return Record::find()->where(['period_id' => $this->id])->all();
     }
-    
-    
-    public function getRecordByUserId() 
+
+
+    public function getRecordByUserId()
     {
-        return ScheduleRecord::find()->where(['period_id' => $this->id, 'user_id' => \Yii::$app->user->id])->all();
+        return Record::find()->where(['period_id' => $this->id, 'user_id' => \Yii::$app->user->id])->all();
     }
 }

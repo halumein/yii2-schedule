@@ -6,7 +6,7 @@ use yii\helpers\Html;
 use yii\widgets\DetailView;
 use yii\helpers\Url;
 /* @var $this yii\web\View */
-/* @var $model app\vendor\halumein\schedule\models\ScheduleSchedule */
+/* @var $model app\vendor\halumein\schedule\models\Schedule */
 
 $this->title = 'Список расписаний';
 $this->params['breadcrumbs'][] = ['label' => 'Расписания', 'url' => ['index']];

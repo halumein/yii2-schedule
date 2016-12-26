@@ -5,7 +5,7 @@ use yii\grid\GridView;
 use yii\helpers\Url;
 
 /* @var $this yii\web\View */
-/* @var $searchModel app\vendor\halumein\schedule\models\search\ScheduleScheduleSearch */
+/* @var $searchModel app\vendor\halumein\schedule\models\search\ScheduleSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title = 'Расписания';
