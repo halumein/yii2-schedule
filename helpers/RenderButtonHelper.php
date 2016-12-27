@@ -84,28 +84,28 @@ class RenderButtonHelper
             }
             case 'confirmed': {
                 $actions = '<a class="record"
-                         data-record-id="'.$record->id.'"'.
+                        data-record-id="'.$record->id.'"'.
                         'data-status="canceled"
-                         data-role="update-record">
-                         Отменить</a> |
-                         <a class="record"
-                         data-record-id="'.$record->id.'"'.
-                         'data-status="denied"
-                         data-role="update-record">
-                         Заблокировать</a>';
+                        data-role="update-record">
+                        Отменить</a> |
+                        <a class="record"
+                        data-record-id="'.$record->id.'"'.
+                        'data-status="denied"
+                        data-role="update-record">
+                        Заблокировать</a>';
                 break;
             }
             case 'canceled': {
                 $actions = '<a class="record"
-                         data-record-id="'.$record->id.'"'.
-                         'data-status="confirmed"
-                         data-role="update-record">
-                         Подтвердить</a> |
-                         <a class="record"
-                         data-record-id="'.$record->id.'"'.
-                         'data-status="denied"
-                         data-role="update-record">
-                         Заблокировать</a>';
+                        data-record-id="'.$record->id.'"'.
+                        'data-status="confirmed"
+                        data-role="update-record">
+                        Подтвердить</a> |
+                        <a class="record"
+                        data-record-id="'.$record->id.'"'.
+                        'data-status="denied"
+                        data-role="update-record">
+                        Заблокировать</a>';
                 break;
             }
             default: {
@@ -114,6 +114,13 @@ class RenderButtonHelper
             }
 
         }
+
+        $actions .= ' | <a class="record"
+                           data-record-id="'.$record->id.'"
+                           data-role="delete-record"
+                           data-url="'.Url::to(['/schedule/record/delete']).'"
+                           >
+                        Удалить</a>';
 
         $users = ArrayHelper::map(User::find()->all(),'id','name');
 

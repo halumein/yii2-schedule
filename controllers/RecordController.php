@@ -72,10 +72,9 @@ class RecordController extends Controller
 
     public function actionDelete()
     {
-        $scheduleId = Yii::$app->request->post('scheduleId');
-        $periodId = Yii::$app->request->post('periodId');
+        $recordId = Yii::$app->request->post('recordId');
 
-        $success = \Yii::$app->schedule->deleteRecord($scheduleId,$periodId);
+        $success = \Yii::$app->schedule->deleteRecord($recordId);
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
         if ($success) {
             return [

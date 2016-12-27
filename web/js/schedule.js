@@ -25,6 +25,7 @@ usesgraphcrt.schedule = {
         $removePeriodBtn = $('[data-role=removePeriod]');
         $sendRecord = $('[data-role=send-record]');
         updateRecord = '[data-role=update-record]';
+        deleteRecord = '[data-role=delete-record]';
 
         $ownerSignObjectShowModalButton = $('[data-role=show-sign-object-modal]');
         $ownerSignObjectModal = $('[data-role=sign-object-modal]');
@@ -74,6 +75,24 @@ usesgraphcrt.schedule = {
                     $ownerSignObjectModal.modal('hide');
                 }
             });
+        });
+
+        $(document).on('click', deleteRecord, function() {
+            var self = this,
+                url = $(self).data('url'),
+                recordId = $(self).data('record-id');
+            if (confirm('Вы уверены, что хотите удалить заявку пользователя?')) {
+                $.when(
+                    usesgraphcrt.schedule.deleteRecord(url, recordId)
+                ).done(function(response) {
+                    if (response !== false) {
+                        console.log('test');
+                        $(self).closest('.user-record').fadeOut('slow', function() {
+                            $(this).remove();
+                        });
+                    }
+                });
+            }
         });
 
 
@@ -280,6 +299,25 @@ usesgraphcrt.schedule = {
             type: "POST",
             url: url,
             data: {scheduleId: scheduleId, periodId: periodId},
+            success: function (response) {
+                if (response.status == 'success') {
+                    return response;
+                } else {
+                    return false;
+                }
+            },
+            fail: function() {
+                return false;
+            }
+        });
+    },
+
+    deleteRecord: function (url, recordId) {
+
+        return $.ajax({
+            type: "POST",
+            url: url,
+            data: {recordId: recordId},
             success: function (response) {
                 if (response.status == 'success') {
                     return response;

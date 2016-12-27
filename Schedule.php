@@ -40,13 +40,9 @@ class Schedule extends Component
         }
     }
 
-    public function deleteRecord($scheduleId,$periodId)
+    public function deleteRecord($recordId)
     {
-        $model = Record::find()->where([
-            'schedule_id' => (int) $scheduleId,
-            'period_id' => (int) $periodId,
-            'user_id' => \Yii::$app->user->id
-        ])->one();
+        $model = Record::findOne($recordId);
         if ($model->delete()) {
             return true;
         } else { return false; }
