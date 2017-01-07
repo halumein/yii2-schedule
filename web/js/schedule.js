@@ -27,9 +27,25 @@ usesgraphcrt.schedule = {
         updateRecord = '[data-role=update-record]';
         deleteRecord = '[data-role=delete-record]';
 
+
         $ownerSignObjectShowModalButton = $('[data-role=show-sign-object-modal]');
         $ownerSignObjectModal = $('[data-role=sign-object-modal]');
 
+        $ownerSignCustomObjectShowModalButton = $('[data-role=show-sign-custom-object-modal]');
+        $ownerSignCustomObjectModal = $('[data-role=sign-custom-object-modal]');
+        $signCustomButton = $ownerSignCustomObjectModal.find('[data-role=sign-custom-object]');
+
+
+        $ownerSignCustomObjectShowModalButton.on('click', function() {
+            var $self = $(this),
+                timeTitle = $self.data('time-title'),
+                scheduleId = $self.data('schedule-id'),
+                periodId = $self.data('period-id');
+
+            $ownerSignCustomObjectModal.find('[data-role=custom-record-time-label]').html(timeTitle);
+            $signCustomButton.data('period-id', periodId).data('schedule-id', scheduleId);
+            $ownerSignCustomObjectModal.modal('toggle');
+        });
 
         $ownerSignObjectShowModalButton.on('click', function() {
             var self = this;
@@ -37,6 +53,44 @@ usesgraphcrt.schedule = {
             $ownerSignObjectModal.find('.modal-body').load('/schedule/schedule/client-choose-ajax?scheduleId=' + $(self).data('schedule-id') + '&periodId=' + $(self).data('period-id'));
         });
 
+        $signCustomButton.on('click', function() {
+            var $self = $(this),
+                url = $self.data('url'),
+                name = $ownerSignCustomObjectModal.find('[data-role=custom-record-name]').val(),
+                text =  $ownerSignCustomObjectModal.find('[data-role=custom-record-text]').val(),
+                scheduleId = $self.data('scheduleId'),
+                periodId = $self.data('periodId');
+
+            if (name != '') {
+                $.when(
+                    usesgraphcrt.schedule.addCustomRecord(url, name, text, scheduleId, periodId, 'confirmed')
+                ).done(function(response) {
+                    if (response !== false && response !== 'undefined') {
+                        $block = $('[data-period-id=' + periodId + ']').find('.record-list');
+                        $places = $('[data-period-id=' + periodId + ']').find('[data-role=places]');
+
+                        val = +$places.html();
+                        $places.html(--val);
+
+                        $block.prepend('<div class="user-record"><label>' + name + '</label>' +
+                                '<span data-role="target"' +
+                                'data-schedule-id="' + scheduleId +
+                                '" data-period-id="' + periodId +
+                                '" data-url="/schedule/record/update">' +
+                                '( <a class="record" data-record-id="' + response.recordId +
+                                '" data-status="canceled" data-role="update-record">Отменить</a> | ' +
+                                '<a class="record" data-record-id="' + response.recordId +
+                                '" data-status="denied" data-role="update-record">Заблокировать</a> | ' +
+                                '<a class="record" data-record-id="' + response.recordId + '" data-role="delete-record" data-url="/schedule/record/delete"> '+
+                                'Удалить</a>)</span></div>');
+
+                        $ownerSignCustomObjectModal.modal('hide');
+                    }
+                });
+            }
+
+
+        });
 
         /*
         *   Записи объекта на время админом
@@ -55,12 +109,10 @@ usesgraphcrt.schedule = {
             ).done(function(response) {
                 if (response !== false) {
                     $block = $('[data-period-id=' + periodId + ']').find('.record-list');
-
                     $places = $('[data-period-id=' + periodId + ']').find('[data-role=places]');
 
                     val = +$places.html();
                     $places.html(--val);
-                    console.log($places);
 
                     $block.prepend('<div class="user-record"><label>' + label + '</label>' +
                             '<span data-role="target"' +
@@ -70,7 +122,9 @@ usesgraphcrt.schedule = {
                             '( <a class="record" data-record-id="' + response.recordId +
                             '" data-status="canceled" data-role="update-record">Отменить</a> | ' +
                             '<a class="record" data-record-id="' + response.recordId +
-                            '" data-status="denied" data-role="update-record">Заблокировать</a> )</span></div>');
+                            '" data-status="denied" data-role="update-record">Заблокировать</a> | ' +
+                            '<a class="record" data-record-id="' + response.recordId + '" data-role="delete-record" data-url="/schedule/record/delete"> '+
+                            'Удалить</a>)</span></div>');
 
                     $ownerSignObjectModal.modal('hide');
                 }
@@ -273,9 +327,7 @@ usesgraphcrt.schedule = {
     *   clientModel - модель объекта записи
     *   clientId - ид объекта записи
     */
-
     sendRequest: function (url, scheduleId, periodId, clientModel, clientId, status = false) {
-
         return $.ajax({
             type: "POST",
             url: url,
@@ -294,7 +346,6 @@ usesgraphcrt.schedule = {
     },
 
     cancelRequest: function (url, scheduleId, periodId) {
-
         return $.ajax({
             type: "POST",
             url: url,
@@ -312,8 +363,28 @@ usesgraphcrt.schedule = {
         });
     },
 
-    deleteRecord: function (url, recordId) {
+    /*
+    *
+    */
+    addCustomRecord: function(url, name, text, scheduleId, periodId, status) {
+        return $.ajax({
+            type: "POST",
+            url: url,
+            data: {scheduleId: scheduleId, periodId: periodId, recordName: name, recordText: text, status: status},
+            success: function (response) {
+                if (response.status == 'success') {
+                    return response;
+                } else {
+                    return false;
+                }
+            },
+            fail: function() {
+                return false;
+            }
+        });
+    },
 
+    deleteRecord: function (url, recordId) {
         return $.ajax({
             type: "POST",
             url: url,

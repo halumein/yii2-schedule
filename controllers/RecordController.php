@@ -7,6 +7,7 @@ use halumein\schedule\models\Schedule;
 use halumein\schedule\models\Period;
 use halumein\schedule\models\Time;
 use halumein\schedule\models\Record;
+use halumein\schedule\models\CustomRecord;
 use halumein\schedule\models\search\ScheduleSearch;
 use halumein\schedule\models\UserToSchedule;
 use yii\helpers\Json;
@@ -31,7 +32,7 @@ class RecordController extends Controller
                     [
                         'allow' => true,
                         'roles' => ['@'],
-                        'actions' => ['add','delete','update']
+                        'actions' => ['add','delete','update', 'add-custom']
                     ],
 
                 ],
@@ -65,6 +66,45 @@ class RecordController extends Controller
         } else {
             return [
                 'status' => 'error',
+            ];
+        }
+    }
+
+    public function actionAddCustom()
+    {
+        $customRecord = new CustomRecord;
+        $customRecord->name = htmlspecialchars(Yii::$app->request->post('recordName'));
+        $customRecord->text = htmlspecialchars(Yii::$app->request->post('recordText'));
+
+        if ($customRecord->save()) {
+
+            $scheduleId = Yii::$app->request->post('scheduleId');
+            $periodId = Yii::$app->request->post('periodId');
+
+            $clientModel = $customRecord::className();
+            $clientId = $customRecord->id;
+
+            $status = Yii::$app->request->post('status');
+
+            $recordId = \Yii::$app->schedule->addRecord( (int)$scheduleId,(int)$periodId, $status, $clientModel, $clientId);
+
+            \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+            if ($recordId){
+                return [
+                    'status' => 'success',
+                    'cancelUrl' => Url::to(['/schedule/record/delete']),
+                    'recordId' => $recordId,
+                ];
+            } else {
+                return [
+                    'status' => 'error',
+                ];
+            }
+        } else {
+            \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+            return [
+                'status' => 'error',
+                'error' => $model->error
             ];
         }
 

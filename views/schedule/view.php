@@ -36,5 +36,4 @@ $this->title = (!empty($model->name)) ? $model->name : 'Какое-то расп
                 </tr>
         </table>
     </div>
-
 </div>

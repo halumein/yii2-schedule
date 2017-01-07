@@ -26,18 +26,29 @@ $this->params['breadcrumbs'][] = $this->title;
                 </tr>
                 <?php foreach ($model->getActivePeriods($dayId)->all() as $period) { ?>
                 <tr class="period-row" data-period-id="<?= $period->id ?>">
-                    <td class="day"><?=$timeList[$period['time_start']]?> - <?=$timeList[$period['time_stop']]?>
+                    <td class="time"><?=$timeList[$period['time_start']]?> - <?=$timeList[$period['time_stop']]?>
                     </td>
                     <td class="record-list">
                         <?php foreach($period->getRecords() as $record) {
                             echo RenderButtonHelper::renderOwnerRecordBlock($record,$model->id,$period->id);
                         } ?>
 
-                        <a class="href"
-                            data-role="show-sign-object-modal"
-                            data-period-id=<?= $period->id ?>
-                            data-schedule-id=<?= $model->id ?>>
-                            Записать</a>
+                        <div class="dropdown">
+                          <a class="href">Записать</a>
+                          <div class="dropdown-content">
+                            <a
+                                data-role="show-sign-object-modal"
+                                data-period-id=<?= $period->id ?>
+                                data-schedule-id=<?= $model->id ?>>
+                                Из списка</a>
+                            <a
+                                data-role="show-sign-custom-object-modal"
+                                data-time-title="<?= $day ?>: <?=$timeList[$period['time_start']]?> - <?=$timeList[$period['time_stop']]?>"
+                                data-period-id=<?= $period->id ?>
+                                data-schedule-id=<?= $model->id ?>>
+                                Ввести</a>
+                        </div>
+                      </div>
                     </td>
                     <td class="places">Мест:
                         <label>
@@ -52,7 +63,7 @@ $this->params['breadcrumbs'][] = $this->title;
         </table>
     </div>
 
-    <!-- Modal -->
+    <!-- Sign Object Modal -->
     <div data-role="sign-object-modal" class="modal fade" role="dialog">
         <div class="modal-dialog">
 
@@ -64,6 +75,42 @@ $this->params['breadcrumbs'][] = $this->title;
                 </div>
                 <div class="modal-body">
                     <p>Контент</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Sign Custom Object Modal -->
+    <div data-role="sign-custom-object-modal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Записать на время <span data-role="custom-record-time-label"></span></h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-sm-12 col-md-offset-2 col-md-8">
+                            <input class="form-control" type="text" name="" value="" placeholder="Заголовок" data-role="custom-record-name">
+                            <br>
+                            <textarea class="form-control" name="name" rows="8" cols="80" data-role="custom-record-text" placeholder="Дополнительная информация"></textarea>
+                            <br>
+                            <button class="btn btn-primary col-sm-12"
+                                    data-role="sign-custom-object"
+                                    data-url="<?= Url::to(['/schedule/record/add-custom']) ?>"
+                                    data-schedule-id="0"
+                                    data-period-id="0"
+                                    type="button"
+                                    name="button">Записать</button>
+                        </div>
+                    </div>
+
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
