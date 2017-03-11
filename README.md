@@ -22,6 +22,11 @@ php yii migrate --migrationPath=vendor/halumein/yii2-schedule/migrations
     'modules' => [
         'schedule' => [
             'class' => 'halumein\schedule\Module',
+            'userModel' => 'namespace\to\userModel' \\модель пользователей, которые будут работать с расписанием
+            'sourceList' => [
+                'namespace\to\someModel' => 'modelName'
+                \\...
+            ], \\ список моделей, для которых будет создаваться расписание
         ],
         //...
     ]
