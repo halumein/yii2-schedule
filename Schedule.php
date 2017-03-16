@@ -4,6 +4,7 @@ namespace halumein\schedule;
 use yii\base\Component;
 use halumein\schedule\models\Record;
 use halumein\schedule\models\Period;
+use halumein\schedule\models\RecordToDate;
 
 class Schedule extends Component
 {
@@ -74,11 +75,29 @@ class Schedule extends Component
             }
         }
     }
+    
+    public function addRecordToDate($recordId,$date,$description)
+    {
+        $model  = new RecordToDate();
+        
+        $model->record_id = $recordId;
+        $model->date = date('Y-m-d',time($date));
+        $model->description = $description;
+        
+        if ($model->save()) {
+            return [
+              'status' => 'success',  
+            ];
+        }
+    }
 
     public function updateRecord($recordId,$status)
     {
         $record = Record::find()->where(['id' => $recordId])->one();
         $record->status = $status;
+        if ($status == 'confirmed') {
+            $this->addRecordToDate($record->id);
+        }
         return $record->update();
     }
 
@@ -93,11 +112,21 @@ class Schedule extends Component
 
         return $amount;
     }
-
-    public function updatePlaces()
+    
+    public function getPlacesByDate($scheduleId,$periodId,$date)
     {
+        $date = date('Y-m-d',time($date));
+        
+        $recordsCount = Record::find()->where([
+            'schedule_id' => $scheduleId,
+            'period_id' => $periodId,
+            'date' => $date,
+            'status' => 'confirmed'
+        ])->count();
+        
+        $amount = Period::findOne($periodId)->amount - $recordsCount;
 
+        return $amount;   
     }
-
 
 }

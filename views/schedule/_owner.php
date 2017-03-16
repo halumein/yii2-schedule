@@ -5,6 +5,7 @@
 use yii\helpers\Url;
 use yii\helpers\Html;
 use yii\widgets\DetailView;
+use nex\datepicker\DatePicker;
 use halumein\schedule\helpers\RenderButtonHelper;
 /* @var $this yii\web\View */
 /* @var $model app\vendor\halumein\schedule\models\Schedule */
@@ -16,51 +17,55 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="schedule-view">
     <h1><?= Html::encode($this->title) ?></h1>
-    <div class="table-responsive">
-        <table class="table table-bordered table-hover table-condensed schedule-table">
-            <?php foreach ($days as $day => $dayId) { ?>
-                <tr class="info">
-                    <th class="day" data-day="<?= $dayId ?>"><?= $day ?></th>
-                    <th></th>
-                    <th class="places">Места</th>
-                </tr>
-                <?php foreach ($model->getActivePeriods($dayId)->all() as $period) { ?>
-                <tr class="period-row" data-period-id="<?= $period->id ?>">
-                    <td class="time"><?=$timeList[$period['time_start']]?> - <?=$timeList[$period['time_stop']]?>
-                    </td>
-                    <td class="record-list">
-                        <?php foreach($period->getRecords() as $record) {
-                            echo RenderButtonHelper::renderOwnerRecordBlock($record,$model->id,$period->id);
-                        } ?>
+    <div class="col-md-12">
+        <div class="row">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover table-condensed schedule-table">
+                    <?php foreach ($days as $day => $dayId) { ?>
+                        <tr class="info">
+                            <th class="day" data-day="<?= $dayId ?>"><?= $day ?></th>
+                            <th></th>
+                            <th class="places">Места</th>
+                        </tr>
+                        <?php foreach ($model->getActivePeriods($dayId)->all() as $period) { ?>
+                            <tr class="period-row" data-period-id="<?= $period->id ?>">
+                                <td class="time"><?=$timeList[$period['time_start']]?> - <?=$timeList[$period['time_stop']]?>
+                                </td>
+                                <td class="record-list">
+                                    <?php foreach($period->getRecords() as $record) {
+                                        echo RenderButtonHelper::renderOwnerRecordBlock($record,$model->id,$period->id);
+                                    } ?>
 
-                        <div class="dropdown">
-                          <a class="href">Записать</a>
-                          <div class="dropdown-content">
-                            <a
-                                data-role="show-sign-object-modal"
-                                data-period-id=<?= $period->id ?>
-                                data-schedule-id=<?= $model->id ?>>
-                                Из списка</a>
-                            <a
-                                data-role="show-sign-custom-object-modal"
-                                data-time-title="<?= $day ?>: <?=$timeList[$period['time_start']]?> - <?=$timeList[$period['time_stop']]?>"
-                                data-period-id=<?= $period->id ?>
-                                data-schedule-id=<?= $model->id ?>>
-                                Ввести</a>
-                        </div>
-                      </div>
-                    </td>
-                    <td class="places">Мест:
-                        <label>
+                                    <div class="dropdown">
+                                        <a class="href" data-toggle="dropdown">Записать</a>
+                                        <div class="dropdown-content ">
+                                            <a
+                                                data-role="show-sign-object-modal"
+                                                data-period-id=<?= $period->id ?>
+                                                data-schedule-id=<?= $model->id ?>>
+                                                Из списка</a>
+                                            <a
+                                                data-role="show-sign-custom-object-modal"
+                                                data-time-title="<?= $day ?>: <?=$timeList[$period['time_start']]?> - <?=$timeList[$period['time_stop']]?>"
+                                                data-period-id=<?= $period->id ?>
+                                                data-schedule-id=<?= $model->id ?>>
+                                                Ввести</a>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="places">Мест:
+                                    <label>
                             <span data-role="places">
                               <?= \Yii::$app->schedule->getPlaces($model->id,$period->id) ?>
                             </span>
-                        </label>
-                    </td>
-                </tr>
-                <?php } ?>
-            <?php } ?>
-        </table>
+                                    </label>
+                                </td>
+                            </tr>
+                        <?php } ?>
+                    <?php } ?>
+                </table>
+            </div>
+        </div>
     </div>
 
     <!-- Sign Object Modal -->

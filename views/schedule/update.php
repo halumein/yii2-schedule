@@ -41,7 +41,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <?php
             echo $form->field($model, 'user_ids')->label('Пользователи, которые имеют доступ')
                 ->widget(Select2::classname(), [
-                    'data' => ArrayHelper::map($users, 'id', 'name'),
+                    'data' => ArrayHelper::map($users, 'id', 'username'),
                     'language' => 'ru',
                     'options' => ['multiple' => true, 'placeholder' => 'Выберите пользователей ...'],
                     'pluginOptions' => [
@@ -67,7 +67,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <div id="<?= $day ?>" class="tab-pane fade in <?=$day === 'monday' ? 'active' : ''?>"
                          data-role="schedule-day-period"
                          data-day-id="<?= $dayStat ?>">
-                        <div class="time" data-role="time-block" data-target="<?= $day ?>">
+                        <div class="time" data-role="time-block" data-target-id="<?= $dayStat ?>" data-target="<?= $day ?>">
                             <?php if (!empty($periods)) {
                                 foreach ($periods as $period) {
                                     if ($period['status'] != 'deleted') {
@@ -127,7 +127,7 @@ Modal::begin([
 'label' => 'Ошибка',
 ]
 ]);
-echo '<div class="alert alert-warning">Возможно время начала позже времени окончания.'.
+echo '<div class="alert alert-warning">Возможно время начала позже времени окончания или совпадает с ним.'.
      '<br> Проверьте правильно ли вы задали время и повторите добавление заново.</div>';
 
 Modal::end();

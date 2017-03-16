@@ -26,16 +26,19 @@ usesgraphcrt.schedule = {
         $sendRecord = $('[data-role=send-record]');
         updateRecord = '[data-role=update-record]';
         deleteRecord = '[data-role=delete-record]';
-
+        recordToDateShowModalButton = '[data-role=show-record-to-date-modal]';
+        signRecordToDateButton = '[data-role=sign-record-to-date]';
+        $datePickerInput = $('[data-role=records-date-value]');
 
         $ownerSignObjectShowModalButton = $('[data-role=show-sign-object-modal]');
         $ownerSignObjectModal = $('[data-role=sign-object-modal]');
 
+        
+
         $ownerSignCustomObjectShowModalButton = $('[data-role=show-sign-custom-object-modal]');
         $ownerSignCustomObjectModal = $('[data-role=sign-custom-object-modal]');
         $signCustomButton = $ownerSignCustomObjectModal.find('[data-role=sign-custom-object]');
-
-
+        
         $ownerSignCustomObjectShowModalButton.on('click', function() {
             var $self = $(this),
                 timeTitle = $self.data('time-title'),
@@ -46,6 +49,59 @@ usesgraphcrt.schedule = {
             $signCustomButton.data('period-id', periodId).data('schedule-id', scheduleId);
             $ownerSignCustomObjectModal.modal('toggle');
         });
+
+        $(document).on('click',recordToDateShowModalButton, function() {
+            var $self = $(this),
+                timeTitle = $self.data('time-title'),
+                scheduleId = $self.data('schedule-id'),
+                periodId = $self.data('period-id'),
+                date = $self.data('date');
+        
+            $(document).find('[data-role=record-to-date-time-label]').html(timeTitle);
+            $(document).find('[data-role=record-date]').val(date);
+            $(document).find('[data-role=sign-record-to-date]').data('period-id', periodId).data('schedule-id', scheduleId);
+            $(document).find('[data-role=record-to-date-modal]').modal('toggle');
+        });
+        
+        $(document).on('click',signRecordToDateButton, function() {
+            var $self = $(this),
+                url = $self.data('url'),
+                date = $(document).find('[data-role=record-to-date-name]').val(),
+                name = $(document).find('[data-role=record-to-date-name]').val(),
+                text =  $(document).find('[data-role=record-to-date-text]').val(),
+                scheduleId = $self.data('scheduleId'),
+                periodId = $self.data('periodId');
+
+            if (name != '') {
+                $.when(
+                    usesgraphcrt.schedule.addCustomRecord(url, name, text, scheduleId, periodId, 'confirmed', date)
+                ).done(function(response) {
+                    if (response !== false && response !== 'undefined') {
+                        $block = $(document).find('[data-period-id=' + periodId + ']').find('.record-list');
+                        $places = $(document).find('[data-period-id=' + periodId + ']').find('[data-role=places]');
+
+                        val = +$places.html();
+                        $places.html(--val);
+
+                        $block.prepend('<div class="user-record"><label>' + name + '</label>' +
+                            '<span data-role="target"' +
+                            'data-schedule-id="' + scheduleId +
+                            '" data-period-id="' + periodId +
+                            '" data-url="/schedule/record/update">' +
+                            '( <a class="record" data-record-id="' + response.recordId +
+                            '" data-status="canceled" data-role="update-record">Отменить</a> | ' +
+                            '<a class="record" data-record-id="' + response.recordId +
+                            '" data-status="denied" data-role="update-record">Заблокировать</a> | ' +
+                            '<a class="record" data-record-id="' + response.recordId + '" data-role="delete-record" data-url="/schedule/record/delete"> '+
+                            'Удалить</a>)</span></div>');
+
+                        $(document).find('[data-role=record-to-date-modal]').modal('hide');
+                    }
+                });
+            }
+
+        });
+
 
         $ownerSignObjectShowModalButton.on('click', function() {
             var self = this;
@@ -88,8 +144,6 @@ usesgraphcrt.schedule = {
                     }
                 });
             }
-
-
         });
 
         /*
@@ -149,6 +203,15 @@ usesgraphcrt.schedule = {
             }
         });
 
+        $datePickerInput.on('change',function () {
+            var self = $(this),
+                url = self.data('url'),
+                date = self.val(),
+                scheduleId = $('[data-role=schedules-list] option:selected').val();
+
+            usesgraphcrt.schedule.renderScheduleDay(url,date,scheduleId);
+
+        });
 
         $selectTargetModel.on('change',function () {
             usesgraphcrt.schedule.getTargetId($selectTargetModel.data('url'),$selectTargetModel.val(),$selectTargetId.data('id'));
@@ -169,7 +232,6 @@ usesgraphcrt.schedule = {
                 $timeStartSelect.val($timeStop['id']);
             } else {
                 $('#alertBtn').click();
-                // alert('Период задан не верно!');
             }
         });
 
@@ -184,7 +246,6 @@ usesgraphcrt.schedule = {
             e.preventDefault();
             var data = usesgraphcrt.schedule.getPeriod();
             $periodsArrayField.val(JSON.stringify(data));
-            // console.log(data);
             $ScheduleForm.submit();
         });
 
@@ -257,9 +318,9 @@ usesgraphcrt.schedule = {
 
     getTargetId: function (url,model,targetId) {
         $.ajax({
-                type: 'POST',
+                type: 'GET',
                 url: url,
-                data: {model:model,_csrf : csrfToken},
+                data: {model:model},
                 success: function (response) {
                     if (response.status == 'success') {
                         $.each(response.list,function (key,val) {
@@ -277,7 +338,8 @@ usesgraphcrt.schedule = {
     getPeriod: function () {
         arrTime = {};
         $('[data-role=schedule-day-period] [data-role=time-block]').each(function ($key, $value) {
-            arrTime[$key] = {};
+            key = $($value).data('target-id');
+            arrTime[key] = {};
             $(this).find('[data-role=time-row]').each(function ($index, $value) {
                 if ($($value).data('period-id') == '') {
                     periodId = 'NULL';
@@ -285,7 +347,6 @@ usesgraphcrt.schedule = {
                     periodId = $($value).data('period-id');
                 }
                 time = $(this).find('[data-role=schedule-day-item]').text();
-                // console.log($(this).find('[data-role=schedule-day-item]'));
                 amount = $(this).find('[data-role=schedule-day-item-amount]').val();
                 if ($(this).find('[data-role=schedule-day-item-status]').prop('checked')){
                     if ($(this).find('[data-role=schedule-day-item-status]').data('status') == 'deleted')
@@ -299,7 +360,7 @@ usesgraphcrt.schedule = {
                     }
                     else { status = 'inactive'; }
                 }
-                arrTime[$key][$index] = {
+                arrTime[key][$index] = {
                     'periodId': periodId,
                     'time': time,
                     'amount': amount,
@@ -307,6 +368,7 @@ usesgraphcrt.schedule = {
                 };
             });
         });
+
         return arrTime;
     },
 
@@ -366,11 +428,11 @@ usesgraphcrt.schedule = {
     /*
     *
     */
-    addCustomRecord: function(url, name, text, scheduleId, periodId, status) {
+    addCustomRecord: function(url, name, text, scheduleId, periodId, status, date) {
         return $.ajax({
             type: "POST",
             url: url,
-            data: {scheduleId: scheduleId, periodId: periodId, recordName: name, recordText: text, status: status},
+            data: {scheduleId: scheduleId, periodId: periodId, recordName: name, recordText: text, status: status, date: date},
             success: function (response) {
                 if (response.status == 'success') {
                     return response;
@@ -400,6 +462,12 @@ usesgraphcrt.schedule = {
                 return false;
             }
         });
+    },
+
+    renderScheduleDay: function (url,date,scheduleId) {
+        
+        $('[data-role=schedule-on-day]').load(url,{date:date, scheduleId: scheduleId});
+    
     },
 
     updateRecord: function (url,data,self) {

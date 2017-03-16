@@ -74,7 +74,8 @@ class RecordController extends Controller
     {
         $customRecord = new CustomRecord;
         $customRecord->name = htmlspecialchars(Yii::$app->request->post('recordName'));
-        $customRecord->text = htmlspecialchars(Yii::$app->request->post('recordText'));
+        $text = htmlspecialchars(Yii::$app->request->post('recordText'));
+        $customRecord->text = $text;
 
         if ($customRecord->save()) {
 
@@ -90,6 +91,10 @@ class RecordController extends Controller
 
             \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
             if ($recordId){
+                $date = Yii::$app->request->post('date');
+                
+                yii::$app->schedule->addRecordToDate($recordId,$date,$text);
+                
                 return [
                     'status' => 'success',
                     'cancelUrl' => Url::to(['/schedule/record/delete']),

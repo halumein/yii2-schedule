@@ -1,9 +1,9 @@
 <?php
 namespace halumein\schedule\helpers;
 
+use Yii;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
-use app\models\User;
 
 class RenderButtonHelper
 {
@@ -121,8 +121,9 @@ class RenderButtonHelper
                            data-url="'.Url::to(['/schedule/record/delete']).'"
                            >
                         Удалить</a>';
-
-        $users = ArrayHelper::map(User::find()->all(),'id','name');
+        $userModel = yii::$app->getModule('schedule')->userModel;
+        $userModel = new $userModel;
+        $users = ArrayHelper::map($userModel::find()->all(),'id','username');
 
         $clientObjectName = false;
         if (!is_null($record->client_model) && !is_null($record->client_id)) {
