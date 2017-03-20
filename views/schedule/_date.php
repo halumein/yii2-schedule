@@ -3,6 +3,7 @@
 \halumein\schedule\assets\ScheduleAsset::register($this);
 
 use yii\helpers\Url;
+use halumein\schedule\helpers\RenderButtonHelper;
 
 ?>
 <div class="schedule-view" style="height: auto">
@@ -15,10 +16,13 @@ use yii\helpers\Url;
             </thead>
             <tbody>
             <?php foreach ($periods as $period) { ?>
-                <tr data-period-id="<?= $period->id ?>">
+                <tr class="period-row" data-period-id="<?= $period->id ?>">
                     <td><?=$timeList[$period['time_start']]?> - <?=$timeList[$period['time_stop']]?></td>
                     <td class="record-list">
-                        <a
+                        <?php foreach($period->getRecordsByDate($date) as $record) {
+                            echo RenderButtonHelper::renderDatedRecordBlock($record,$period->schedule_id,$period->id,$date);
+                        } ?>
+                        <a  class="<?= (\Yii::$app->schedule->getPlaces($period->schedule_id,$period->id,$date) != 0) ? '' : 'hidden' ?>"
                             data-role="show-record-to-date-modal"
                             data-time-title="<?= $day['dayName'] ?>: <?=$timeList[$period['time_start']]?> - <?=$timeList[$period['time_stop']]?>"
                             data-period-id=<?= $period->id ?>
@@ -29,7 +33,7 @@ use yii\helpers\Url;
                     <td class="places">Мест:
                         <label>
                             <span data-role="places">
-                              <?= \Yii::$app->schedule->getPlaces($period->schedule_id,$period->id) ?>
+                              <?= \Yii::$app->schedule->getPlaces($period->schedule_id,$period->id,$date) ?>
                             </span>
                         </label>
                     </td>

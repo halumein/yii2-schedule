@@ -60,6 +60,7 @@ class RecordController extends Controller
         if ($recordId){
             return [
                 'status' => 'success',
+                'updateUrl' => Url::to(['/schedule/record/update']),
                 'cancelUrl' => Url::to(['/schedule/record/delete']),
                 'recordId' => $recordId,
             ];
@@ -91,12 +92,14 @@ class RecordController extends Controller
 
             \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
             if ($recordId){
-                $date = Yii::$app->request->post('date');
                 
-                yii::$app->schedule->addRecordToDate($recordId,$date,$text);
-                
+                if ($date = yii::$app->request->post('date')) {
+                    yii::$app->schedule->addRecordToDate($recordId,$date,$text);
+                }
+
                 return [
                     'status' => 'success',
+                    'updateUrl' => Url::to(['/schedule/record/update']),
                     'cancelUrl' => Url::to(['/schedule/record/delete']),
                     'recordId' => $recordId,
                 ];
@@ -137,6 +140,7 @@ class RecordController extends Controller
     {
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
         $record = Yii::$app->request->post('updateRecord');
+
         if (Record::find()->where(['id' => $record['recordId'],'status' => $record['status']])->one()) {
             $places = \Yii::$app->schedule->getPlaces($record['scheduleId'],$record['periodId']);
             return [
@@ -145,7 +149,7 @@ class RecordController extends Controller
             ];
         }
         $success = \Yii::$app->schedule->updateRecord($record['recordId'],$record['status']);
-        $places = \Yii::$app->schedule->getPlaces($record['scheduleId'],$record['periodId']);
+        $places = \Yii::$app->schedule->getPlaces($record['scheduleId'],$record['periodId'],$record['date']);
         if ($success) {
 
             return [

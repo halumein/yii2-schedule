@@ -3,6 +3,7 @@
 namespace halumein\schedule\models;
 
 use Yii;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "schedule_period".
@@ -62,6 +63,20 @@ class Period extends \yii\db\ActiveRecord
     public function getRecords()
     {
         return Record::find()->where(['period_id' => $this->id])->all();
+    }
+
+    public function getRecordsByDate($date)
+    {
+
+        $date = date('Y-m-d',strtotime($date));
+
+        $recordIds = ArrayHelper::getColumn(RecordToDate::find()->select('record_id')->where(['date' => $date])->all(),'record_id');
+//        echo '<pre>';
+//        var_dump($recordIds);
+//        var_dump($this->id);
+//        var_dump(Record::find()->where(['id' => $recordIds])->andWhere(['period_id' => $this->id])->all());
+
+        return Record::find()->where(['period_id' => $this->id, 'id' => $recordIds])->all();
     }
 
 

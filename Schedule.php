@@ -2,6 +2,7 @@
 namespace halumein\schedule;
 
 use yii\base\Component;
+use yii\helpers\ArrayHelper;
 use halumein\schedule\models\Record;
 use halumein\schedule\models\Period;
 use halumein\schedule\models\RecordToDate;
@@ -45,6 +46,9 @@ class Schedule extends Component
     {
         $model = Record::findOne($recordId);
         if ($model->delete()) {
+
+            RecordToDate::deleteAll(['record_id' => $recordId]);
+
             return true;
         } else { return false; }
     }
@@ -78,10 +82,11 @@ class Schedule extends Component
     
     public function addRecordToDate($recordId,$date,$description)
     {
+
         $model  = new RecordToDate();
         
         $model->record_id = $recordId;
-        $model->date = date('Y-m-d',time($date));
+        $model->date = date('Y-m-d',strtotime($date));
         $model->description = $description;
         
         if ($model->save()) {
@@ -93,40 +98,39 @@ class Schedule extends Component
 
     public function updateRecord($recordId,$status)
     {
+        
         $record = Record::find()->where(['id' => $recordId])->one();
         $record->status = $status;
-        if ($status == 'confirmed') {
-            $this->addRecordToDate($record->id);
-        }
+
         return $record->update();
     }
 
-    public function getPlaces($scheduleId,$periodId)
+    public function getPlaces($scheduleId,$periodId,$date = null)
     {
-        $recordsCount = Record::find()->where([
-            'schedule_id' => $scheduleId,
-            'period_id' => $periodId,
-            'status' => 'confirmed'
-        ])->count();
-        $amount = Period::findOne($periodId)->amount - $recordsCount;
+        
+        if ($date == null) {
+            $recordsCount = Record::find()->where([
+                'schedule_id' => $scheduleId,
+                'period_id' => $periodId,
+                'status' => 'confirmed'
+            ])->count();
+                       
+        } else {
+            $date = date('Y-m-d',strtotime($date));
 
+            $recordIds = ArrayHelper::getColumn(RecordToDate::find()->select('record_id')->where(['date' => $date])->all(),'record_id');
+
+            $recordsCount = Record::find()->where([
+                'id' => $recordIds,
+                'schedule_id' => $scheduleId,
+                'period_id' => $periodId,
+                'status' => 'confirmed'
+            ])->count(); 
+        }
+
+        $amount = Period::findOne($periodId)->amount - $recordsCount;
+        
         return $amount;
-    }
-    
-    public function getPlacesByDate($scheduleId,$periodId,$date)
-    {
-        $date = date('Y-m-d',time($date));
-        
-        $recordsCount = Record::find()->where([
-            'schedule_id' => $scheduleId,
-            'period_id' => $periodId,
-            'date' => $date,
-            'status' => 'confirmed'
-        ])->count();
-        
-        $amount = Period::findOne($periodId)->amount - $recordsCount;
-
-        return $amount;   
     }
 
 }

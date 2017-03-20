@@ -66,7 +66,7 @@ usesgraphcrt.schedule = {
         $(document).on('click',signRecordToDateButton, function() {
             var $self = $(this),
                 url = $self.data('url'),
-                date = $(document).find('[data-role=record-to-date-name]').val(),
+                date = $(document).find('[data-role=record-date]').val(),
                 name = $(document).find('[data-role=record-to-date-name]').val(),
                 text =  $(document).find('[data-role=record-to-date-text]').val(),
                 scheduleId = $self.data('scheduleId'),
@@ -87,12 +87,10 @@ usesgraphcrt.schedule = {
                             '<span data-role="target"' +
                             'data-schedule-id="' + scheduleId +
                             '" data-period-id="' + periodId +
-                            '" data-url="/schedule/record/update">' +
+                            '" data-url="'+ response.updateUrl +'"> ' +
                             '( <a class="record" data-record-id="' + response.recordId +
                             '" data-status="canceled" data-role="update-record">Отменить</a> | ' +
-                            '<a class="record" data-record-id="' + response.recordId +
-                            '" data-status="denied" data-role="update-record">Заблокировать</a> | ' +
-                            '<a class="record" data-record-id="' + response.recordId + '" data-role="delete-record" data-url="/schedule/record/delete"> '+
+                            '<a class="record" data-record-id="' + response.recordId + '" data-role="delete-record" data-url="'+ response.cancelUrl +'"> '+
                             'Удалить</a>)</span></div>');
 
                         $(document).find('[data-role=record-to-date-modal]').modal('hide');
@@ -132,12 +130,13 @@ usesgraphcrt.schedule = {
                                 '<span data-role="target"' +
                                 'data-schedule-id="' + scheduleId +
                                 '" data-period-id="' + periodId +
-                                '" data-url="/schedule/record/update">' +
+                                '" data-url="'+ response.updateUrl +'"> ' +
                                 '( <a class="record" data-record-id="' + response.recordId +
                                 '" data-status="canceled" data-role="update-record">Отменить</a> | ' +
                                 '<a class="record" data-record-id="' + response.recordId +
                                 '" data-status="denied" data-role="update-record">Заблокировать</a> | ' +
-                                '<a class="record" data-record-id="' + response.recordId + '" data-role="delete-record" data-url="/schedule/record/delete"> '+
+                                '<a class="record" data-record-id="' + response.recordId + '" data-role="delete-record" ' +
+                                    'data-url="'+ response.cancelUrl +'"> '+
                                 'Удалить</a>)</span></div>');
 
                         $ownerSignCustomObjectModal.modal('hide');
@@ -172,7 +171,7 @@ usesgraphcrt.schedule = {
                             '<span data-role="target"' +
                             'data-schedule-id="' + scheduleId +
                             '" data-period-id="' + periodId +
-                            '" data-url="/schedule/record/update">' +
+                            '" data-url="'+ response.updateUrl +'"> ' +
                             '( <a class="record" data-record-id="' + response.recordId +
                             '" data-status="canceled" data-role="update-record">Отменить</a> | ' +
                             '<a class="record" data-record-id="' + response.recordId +
@@ -251,11 +250,17 @@ usesgraphcrt.schedule = {
 
         $(document).on('click', updateRecord,function(){
             self = this;
+            if ($(self).closest('[data-role=target]').data('record-date') != undefined) {
+                date = $(self).closest('[data-role=target]').data('record-date');
+            } else {
+                date = null;
+            }
             data= {
                 recordId: $(self).data('record-id'),
                 status: $(self).data('status'),
                 periodId: $(self).closest('[data-role=target]').data('period-id'),
                 scheduleId: $(self).closest('[data-role=target]').data('schedule-id'),
+                date: date,
             };
             url = $(self).closest('[data-role=target]').data('url');
             if ($(self).data('status') != 'denied') {
@@ -429,6 +434,9 @@ usesgraphcrt.schedule = {
     *
     */
     addCustomRecord: function(url, name, text, scheduleId, periodId, status, date) {
+        if  (date == 'undefined') {
+            date = null;
+        }
         return $.ajax({
             type: "POST",
             url: url,

@@ -143,12 +143,67 @@ class RenderButtonHelper
         return $block;
     }
 
-    // static function renderOwnerUserRecord($record)
-    // {
-    //     $users = ArrayHelper::map(User::getActive(),'id','name');
-    //     $username = '<div><label>'.$users[$record->user_id].'</label></div>';
-    //
-    //     return $username;
-    // }
+    static function renderDatedRecordBlock($record,$scheduleId,$periodId,$date)
+    {
+        switch ($record->status) {
+            case 'in process': {
+                $actions = '<a class="record"
+                         data-record-id="'.$record->id.'"'.
+                    'data-status="confirmed"
+                         data-role="update-record">
+                         Подтвердить</a>';
+                break;
+            }
+            case 'confirmed': {
+                $actions = '<a class="record"
+                        data-record-id="'.$record->id.'"'.
+                    'data-status="canceled"
+                        data-role="update-record">
+                        Отменить</a>';
+                break;
+            }
+            case 'canceled': {
+                $actions = '<a class="record"
+                        data-record-id="'.$record->id.'"'.
+                    'data-status="confirmed"
+                        data-role="update-record">
+                        Подтвердить</a>';
+                break;
+            }
+            default: {
+                return '';
+                break;
+            }
+
+        }
+
+        $actions .= ' | <a class="record"
+                           data-record-id="'.$record->id.'"
+                           data-role="delete-record"
+                           data-url="'.Url::to(['/schedule/record/delete']).'"
+                           >
+                        Удалить</a>';
+        $userModel = yii::$app->getModule('schedule')->userModel;
+        $userModel = new $userModel;
+        $users = ArrayHelper::map($userModel::find()->all(),'id','username');
+
+        $clientObjectName = false;
+        if (!is_null($record->client_model) && !is_null($record->client_id)) {
+            $model = new $record->client_model;
+            $client = $model->findOne($record->client_id);
+            $clientObjectName = $client->name;
+        }
+
+        $label = $clientObjectName ? $clientObjectName : $users[$record->user_id];
+
+        $block = '<div class="user-record"><label>'.$label.' </label>
+        '.'<span data-role="target"
+        data-schedule-id="'.$scheduleId.'"
+        data-period-id="'.$periodId.'"
+        data-record-date = "'.$date.'"
+        data-url="'.Url::to(['/schedule/record/update']).'" > ( '.$actions.' )</span></div>';
+
+        return $block;
+    }
 
 }
