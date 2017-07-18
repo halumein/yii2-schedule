@@ -25,10 +25,10 @@ php yii migrate --migrationPath=vendor/halumein/yii2-schedule/migrations
             'userModel' => 'namespace\to\userModel' //модель пользователей, которые будут работать с расписанием
             'sourceList' => [
                 'namespace\to\someModel' => 'modelName'
+                // 'common\models\Playzone' => 'Игровые зоны'
                 ...
             ], // список моделей, для которых будет создаваться расписание
         ],
         //...
     ]
 ```
-

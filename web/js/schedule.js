@@ -13,6 +13,7 @@ usesgraphcrt.schedule = {
         $timeInput = $('[data-role=getTime]');
         $timeStartSelect = $('[name=setTimeStart]');
         $timeStopSelect = $('[name=setTimeStop]');
+
         $timeStart = {};
         $timeStop = {};
         $timeStart['time'] = $('[name=setTimeStart] option:selected').text();
@@ -33,12 +34,11 @@ usesgraphcrt.schedule = {
         $ownerSignObjectShowModalButton = $('[data-role=show-sign-object-modal]');
         $ownerSignObjectModal = $('[data-role=sign-object-modal]');
 
-        
 
         $ownerSignCustomObjectShowModalButton = $('[data-role=show-sign-custom-object-modal]');
         $ownerSignCustomObjectModal = $('[data-role=sign-custom-object-modal]');
         $signCustomButton = $ownerSignCustomObjectModal.find('[data-role=sign-custom-object]');
-        
+
         $ownerSignCustomObjectShowModalButton.on('click', function() {
             var $self = $(this),
                 timeTitle = $self.data('time-title'),
@@ -56,13 +56,13 @@ usesgraphcrt.schedule = {
                 scheduleId = $self.data('schedule-id'),
                 periodId = $self.data('period-id'),
                 date = $self.data('date');
-        
+
             $(document).find('[data-role=record-to-date-time-label]').html(timeTitle);
             $(document).find('[data-role=record-date]').val(date);
             $(document).find('[data-role=sign-record-to-date]').data('period-id', periodId).data('schedule-id', scheduleId);
             $(document).find('[data-role=record-to-date-modal]').modal('toggle');
         });
-        
+
         $(document).on('click',signRecordToDateButton, function() {
             var $self = $(this),
                 url = $self.data('url'),
@@ -100,6 +100,12 @@ usesgraphcrt.schedule = {
 
         });
 
+        $timeStartSelect.on('change', function() {
+            var self = this,
+                selectedIndex = $(self).prop('selectedIndex');
+            $timeStopSelect.prop('selectedIndex', selectedIndex + 1) ;
+            $timeStopSelect.prop('selectedIndex', selectedIndex + 1) ;
+        });
 
         $ownerSignObjectShowModalButton.on('click', function() {
             var self = this;
@@ -229,6 +235,11 @@ usesgraphcrt.schedule = {
                 time = $timeStart['time'] + ' - '+ $timeStop['time'];
                 usesgraphcrt.schedule.addTime(time);
                 $timeStartSelect.val($timeStop['id']);
+
+                selectedIndex = $timeStartSelect.prop('selectedIndex');
+                $timeStopSelect.prop('selectedIndex', selectedIndex + 1) ;
+
+
             } else {
                 $('#alertBtn').click();
             }
@@ -473,9 +484,9 @@ usesgraphcrt.schedule = {
     },
 
     renderScheduleDay: function (url,date,scheduleId) {
-        
+
         $('[data-role=schedule-on-day]').load(url,{date:date, scheduleId: scheduleId});
-    
+
     },
 
     updateRecord: function (url,data,self) {

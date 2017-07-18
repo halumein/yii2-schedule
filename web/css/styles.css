@@ -80,3 +80,7 @@
 .dropdown:hover .dropbtn {
     background-color: #f0f7f0;
 }
+
+.schedule-link {
+    cursor: pointer;
+}

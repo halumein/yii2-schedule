@@ -4,6 +4,8 @@ namespace halumein\schedule\models;
 
 use Yii;
 use yii\helpers\ArrayHelper;
+use halumein\schedule\models\Time;
+use yii\base\Object;
 
 /**
  * This is the model class for table "schedule_period".
@@ -17,6 +19,7 @@ use yii\helpers\ArrayHelper;
  */
 class Period extends \yii\db\ActiveRecord
 {
+
     /**
      * @inheritdoc
      */
@@ -60,6 +63,15 @@ class Period extends \yii\db\ActiveRecord
         return $this->find()->where(['day_id' => $dayId])->all();
     }
 
+    public function getTime()
+    {
+        $object = ['start' => null, 'stop' => null];
+        $object = (object) $object;
+        $object->start = $this->hasOne(Time::className(),['id' => 'time_start'])->one();
+        $object->stop = $this->hasOne(Time::className(),['id' => 'time_stop'])->one();
+        return $object;
+    }
+
     public function getRecords()
     {
         return Record::find()->where(['period_id' => $this->id])->all();
@@ -71,10 +83,6 @@ class Period extends \yii\db\ActiveRecord
         $date = date('Y-m-d',strtotime($date));
 
         $recordIds = ArrayHelper::getColumn(RecordToDate::find()->select('record_id')->where(['date' => $date])->all(),'record_id');
-//        echo '<pre>';
-//        var_dump($recordIds);
-//        var_dump($this->id);
-//        var_dump(Record::find()->where(['id' => $recordIds])->andWhere(['period_id' => $this->id])->all());
 
         return Record::find()->where(['period_id' => $this->id, 'id' => $recordIds])->all();
     }

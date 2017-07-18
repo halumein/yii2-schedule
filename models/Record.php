@@ -51,4 +51,12 @@ class Record extends \yii\db\ActiveRecord
         ];
     }
 
+    public function getClient()
+    {
+        $client = $this->client_model;
+        $client = new $client();
+        return $this->hasOne($client::className(), ['id' => 'client_id']);
+
+    }
+
 }

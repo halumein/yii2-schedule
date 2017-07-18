@@ -39,6 +39,8 @@ class Time extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'time' => 'Time',
+            'show' => 'Показывать',
+            'sort' => 'Сортировка',
         ];
     }
 }

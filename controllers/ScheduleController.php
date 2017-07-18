@@ -113,11 +113,11 @@ class ScheduleController extends Controller
 
     public function actionUpdate($id = null)
     {
+        $periods = [];
         if ($id != null) {
             $model = $this->findModel($id);
             $periods = Period::find()->where(['schedule_id'=>$model->id])->orderBy(['time_start' => SORT_ASC])->all();
-        } else
-        {
+        } else {
             $model = new Schedule();
         }
 
@@ -125,7 +125,7 @@ class ScheduleController extends Controller
 
         $users = $this->module->userModel;
         $users = new $users;
-        $time = Time::find()->all();
+        $time = Time::find()->where(['show' => 1])->all();
         $timeList = ArrayHelper::map($time,'id','time');
         $targetList = [];
         $days = [
@@ -199,8 +199,11 @@ class ScheduleController extends Controller
 
         $model = new $modelName;
 
+        $titleColumnName = $this->module->sourceTitleColumnName;
+
+
         $model = $model->find()->all();
-        $list = ArrayHelper::map($model,'id','username');
+        $list = ArrayHelper::map($model,'id',$titleColumnName);
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
         return [
             'status' => 'success',
@@ -211,7 +214,7 @@ class ScheduleController extends Controller
     public function actionDateView()
     {
         $schedules = ArrayHelper::map(Schedule::find()->all(),'id','name');
-        
+
         return $this->render('date-view',[
             'schedules' => $schedules,
         ]);
@@ -232,7 +235,7 @@ class ScheduleController extends Controller
             'scheduleId' => Yii::$app->request->get('scheduleId'),
         ]);
     }
-    
+
     public function actionFindRecordsAjax()
     {
 
@@ -254,7 +257,7 @@ class ScheduleController extends Controller
         $periods = Period::find()->where(['day_id' => $day['id'], 'status' => 'active', 'schedule_id' => $scheduleId])->all();
 
         $timeList = ArrayHelper::map(Time::find()->all(),'id','time');
-        
+
         return $this->renderAjax('_date',[
             'date' => $date,
             'day' => $day,
@@ -265,15 +268,15 @@ class ScheduleController extends Controller
 
     public function actionAddDatedRecord()
     {
-        
+
     }
 
     private function savePeriod($periodsArray,$scheduleId){
-        
+
         $days = json_decode($periodsArray);
-        
+
         $times = ArrayHelper::map(Time::find()->all(),'time','id');
-        
+
         $periodId = \Yii::$app->schedule->addPeriod($days,$scheduleId,$times);
     }
 }

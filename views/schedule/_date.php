@@ -22,7 +22,7 @@ use halumein\schedule\helpers\RenderButtonHelper;
                         <?php foreach($period->getRecordsByDate($date) as $record) {
                             echo RenderButtonHelper::renderDatedRecordBlock($record,$period->schedule_id,$period->id,$date);
                         } ?>
-                        <a  class="<?= (\Yii::$app->schedule->getPlaces($period->schedule_id,$period->id,$date) != 0) ? '' : 'hidden' ?>"
+                        <a  class="schedule-link <?= (\Yii::$app->schedule->getPlaces($period->schedule_id,$period->id,$date) != 0) ? '' : 'hidden' ?>"
                             data-role="show-record-to-date-modal"
                             data-time-title="<?= $day['dayName'] ?>: <?=$timeList[$period['time_start']]?> - <?=$timeList[$period['time_stop']]?>"
                             data-period-id=<?= $period->id ?>
