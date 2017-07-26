@@ -92,4 +92,11 @@ class Period extends \yii\db\ActiveRecord
     {
         return Record::find()->where(['period_id' => $this->id, 'user_id' => \Yii::$app->user->id])->all();
     }
+
+    public function getReservedAmountByDate($date)
+    {
+        $date = date('Y-m-d',strtotime($date));
+        $recordIds = ArrayHelper::getColumn(RecordToDate::find()->select('record_id')->where(['date' => $date])->all(),'record_id');
+        return Record::find()->where(['period_id' => $this->id, 'id' => $recordIds])->sum('amount');
+    }
 }

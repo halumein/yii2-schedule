@@ -30,7 +30,7 @@ class Record extends \yii\db\ActiveRecord
     {
         return [
             [['schedule_id', 'period_id', 'status'], 'required'],
-            [['user_id', 'schedule_id', 'period_id'], 'integer'],
+            [['user_id', 'schedule_id', 'period_id', 'amount'], 'integer'],
             [['status'], 'string'],
         ];
     }
@@ -48,6 +48,7 @@ class Record extends \yii\db\ActiveRecord
             'schedule_id' => 'Schedule ID',
             'period_id' => 'Period ID',
             'status' => 'Status',
+            'amount' => 'Amount',
         ];
     }
 
