@@ -88,4 +88,11 @@ class Schedule extends \yii\db\ActiveRecord
    {
        $amount = Record::find()->count(['schedule_id' => $this->id]);
    }
+
+   public function getTargetName()
+   {
+       $model = $this->target_model;
+       $model = $model::findOne($this->target_id);
+       return $model->title;
+   }
 }

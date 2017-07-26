@@ -3,7 +3,7 @@
 namespace halumein\schedule\models;
 
 use Yii;
-
+use halumein\schedule\models\RecordToDate;
 /**
  * This is the model class for table "schedule_record".
  *
@@ -57,6 +57,11 @@ class Record extends \yii\db\ActiveRecord
         $client = new $client();
         return $this->hasOne($client::className(), ['id' => 'client_id']);
 
+    }
+
+    public function getRecordToDate()
+    {
+        return $this->hasOne(RecordToDate::className(), ['record_id' => 'id']);
     }
 
 }

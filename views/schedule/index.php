@@ -26,8 +26,21 @@ $this->params['breadcrumbs'][] = $this->title;
 
            // 'id',
             //'owner_id',
-            'target_model',
-            'target_id',
+            [
+                'attribute' => 'target_model',
+                'filter' => false,
+                'value' => function($model) {
+                    $module = \Yii::$app->getModule('schedule');
+                    return $module->sourceList[$model->target_model];
+                }
+            ],
+            [
+                'attribute' => 'target_id',
+                'filter' => false,
+                'value' => function($model) {
+                    return $model->targetName;
+                }
+            ],
             'name',
             // 'date',
 
