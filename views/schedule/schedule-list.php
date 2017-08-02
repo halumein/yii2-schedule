@@ -17,7 +17,7 @@ $this->params['breadcrumbs'][] = $this->title;
     foreach ($schedules as $schedule) {
  ?>
         <p>
-            <a class="btn btn-default" href="view?id=<?= $schedule->id ?>">
+            <a class="btn btn-default" href="<?= Url::to(['/schedule/schedule/view', 'id' => $schedule->id]) ?>">
                 <?php if (!empty($schedule->name)) { echo $schedule->name; } else echo 'какое-то расписание без названия'; ?>
             </a>
         </p>

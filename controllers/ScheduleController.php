@@ -149,7 +149,7 @@ class ScheduleController extends Controller
 
             if ($model->save()) {
                 $this->savePeriod($model->periodsArray,$model->id);
-                return $this->redirect('index');
+                return $this->redirect(['index']);
             }
         } else {
             return $this->render('update', [
