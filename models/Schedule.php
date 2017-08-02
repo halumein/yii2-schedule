@@ -93,6 +93,8 @@ class Schedule extends \yii\db\ActiveRecord
    {
        $model = $this->target_model;
        $model = $model::findOne($this->target_id);
-       return $model->title;
+       $title = Yii::$app->getModule('schedule')->sourceTitleColumnName;
+
+       return $model->{$title};
    }
 }
