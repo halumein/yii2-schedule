@@ -108,6 +108,20 @@ $this->params['breadcrumbs'][] = $this->title;
                     <div>
                         <span class="btn btn-success" data-role="addTime">+</span>
                     </div>
+                    <div>
+                        <span class="btn btn-success" data-role="copy-day-schedule-button">Скопировать с</span>
+                    </div>
+                    <div class="">
+                        <select class="form-control" data-role="copy-source-day-selector">
+                            <option value="1">Понедельника</option>
+                            <option value="2">Вторника</option>
+                            <option value="3">Среды</option>
+                            <option value="4">Четверга</option>
+                            <option value="5">Пятницы</option>
+                            <option value="6">Субботы</option>
+                            <option value="0">Воскресенья</option>
+                        </select>
+                    </div>
                 </div>
             </div>
         </div>

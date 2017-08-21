@@ -39,6 +39,26 @@ usesgraphcrt.schedule = {
         $ownerSignCustomObjectModal = $('[data-role=sign-custom-object-modal]');
         $signCustomButton = $ownerSignCustomObjectModal.find('[data-role=sign-custom-object]');
 
+        // для быстрого копирования расписания дня на текущий день
+        $copySourceDaySelector = $('[data-role=copy-source-day-selector]');
+        $copyDayScheduleButton = $('[data-role=copy-day-schedule-button]');
+
+        $copyDayScheduleButton.on('click', function() {
+            var sourceDayId = $copySourceDaySelector.val();
+            $('.tab-content .active [data-role=time-block]').html('');
+
+            var $periods = $(document).find('[data-day-id=' + sourceDayId + ']').find('[data-role=time-row]').clone();
+
+            $periods.each(function(key, element) {
+                var time = $(element).find('[data-role=schedule-day-item]').html();
+                var places = $(element).find('[data-role=schedule-day-item-amount]').val();
+
+                usesgraphcrt.schedule.addTime(time, places);
+            });
+
+
+        });
+
         $ownerSignCustomObjectShowModalButton.on('click', function() {
             var $self = $(this),
                 timeTitle = $self.data('time-title'),
@@ -321,15 +341,14 @@ usesgraphcrt.schedule = {
         });
     },
 
-    addTime: function (time) {
+    addTime: function (time, places = 1) {
         $('.tab-content .active [data-role=time-block]').append($('<div class="row added-period"' +
             ' data-role="time-row" data-period-id=""></div>')
             .append('<div><span class="form-control btn btn-danger" data-role="removePeriod">X</span></div>')
             .append('<div><input class="form-control" type="checkbox" data-role="schedule-day-item-status" checked></div>')
-            .append('<div><input class="form-control" type="text" data-role="schedule-day-item-amount" placeholder="Места" style="width:100px;"></div>')
+            .append('<div><input class="form-control" type="text" data-role="schedule-day-item-amount" placeholder="Места" style="width:100px;" value="' + places + '"></div>')
             .append('<div><span data-role="schedule-day-item" style="">'+time+'</span></div>')
         );
-
     },
 
     getTargetId: function (url,model,targetId) {
