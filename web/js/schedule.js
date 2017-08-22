@@ -339,6 +339,8 @@ usesgraphcrt.schedule = {
                     break;
             }
         });
+
+        $datePickerInput.trigger('change');
     },
 
     addTime: function (time, places = 1) {
@@ -503,9 +505,11 @@ usesgraphcrt.schedule = {
     },
 
     renderScheduleDay: function (url,date,scheduleId) {
-
+        $.ajaxSetup({
+            headers:
+            { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') }
+        });
         $('[data-role=schedule-on-day]').load(url,{date:date, scheduleId: scheduleId});
-
     },
 
     updateRecord: function (url,data,self) {

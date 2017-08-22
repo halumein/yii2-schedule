@@ -84,3 +84,15 @@
 .schedule-link {
     cursor: pointer;
 }
+
+.schedule-time-column {
+    width: 200px;
+}
+
+.schedule-record-column {
+    min-width: 500px;
+}
+
+.schedule-places-column {
+    width: 200px;
+}

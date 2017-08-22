@@ -9,7 +9,8 @@ class RenderButtonHelper
 {
     static function renderButton($record = null,$scheduleId,$periodId)
     {
-
+        $textStatus = $record['status'];
+        $status = $record['status'];
         if ($record['user_id'] == \Yii::$app->user->id) {
             switch ($record['status']){
                 case 'in process': {

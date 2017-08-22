@@ -10,9 +10,9 @@ use halumein\schedule\helpers\RenderButtonHelper;
     <h4>Расписание на <?= $day['dayName'] ?> | <?= $date ?></h4>
         <table class="table table-bordered">
             <thead>
-            <th>Время</th>
-            <th></th>
-            <th>Места</th>
+            <th class="schedule-time-column">Время</th>
+            <th class="schedule-record-column"></th>
+            <th class="schedule-places-column">Места</th>
             </thead>
             <tbody>
             <?php foreach ($periods as $period) { ?>
