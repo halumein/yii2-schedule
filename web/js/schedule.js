@@ -380,6 +380,10 @@ usesgraphcrt.schedule = {
             }
         });
 
+        $('[data-role=schedules-list]').on('change', function() {
+            $datePickerInput.trigger('change');
+        });
+
         $datePickerInput.trigger('change');
     },
 
