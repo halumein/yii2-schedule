@@ -15,14 +15,14 @@ class RenderButtonHelper
             switch ($record['status']){
                 case 'in process': {
                     $status = 'in process';
-                    $url = Url::to(['/schedule/record/delete']);
+                    $url = Url::to(['/schedule/record/delete-ajax']);
                     $text = 'Отменить';
                     $textStatus = 'Заявка отправлена.  | ';
                     break;
                 }
                 case 'confirmed': {
                     $status = 'confirmed';
-                    $url = Url::to(['/schedule/record/delete']);
+                    $url = Url::to(['/schedule/record/delete-ajax']);
                     $text = 'Отменить';
                     $textStatus = 'Заявка подтверждена.  | ';
                     break;
@@ -119,7 +119,7 @@ class RenderButtonHelper
         $actions .= ' | <a class="record"
                            data-record-id="'.$record->id.'"
                            data-role="delete-record"
-                           data-url="'.Url::to(['/schedule/record/delete']).'"
+                           data-url="'.Url::to(['/schedule/record/delete-ajax']).'"
                            >
                         Удалить</a>';
         $userModel = yii::$app->getModule('schedule')->userModel;
@@ -181,7 +181,7 @@ class RenderButtonHelper
         $actions .= ' | <a class="record"
                            data-record-id="'.$record->id.'"
                            data-role="delete-record"
-                           data-url="'.Url::to(['/schedule/record/delete']).'"
+                           data-url="'.Url::to(['/schedule/record/delete-ajax']).'"
                            >
                         Удалить</a>';
         $userModel = yii::$app->getModule('schedule')->userModel;

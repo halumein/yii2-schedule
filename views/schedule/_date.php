@@ -16,24 +16,41 @@ use halumein\schedule\helpers\RenderButtonHelper;
             </thead>
             <tbody>
             <?php foreach ($periods as $period) { ?>
-                <tr class="period-row" data-period-id="<?= $period->id ?>">
+                <?php $freePlaces = \Yii::$app->schedule->getPlaces($period->schedule_id,$period->id,$date) ?>
+                <tr class="period-row" data-period-id="<?= $period->id ?>" data-role="period-row">
                     <td><?=$timeList[$period['time_start']]?> - <?=$timeList[$period['time_stop']]?></td>
                     <td class="record-list">
                         <?php foreach($period->getRecordsByDate($date) as $record) {
                             echo RenderButtonHelper::renderDatedRecordBlock($record,$period->schedule_id,$period->id,$date);
                         } ?>
-                        <a  class="schedule-link <?= (\Yii::$app->schedule->getPlaces($period->schedule_id,$period->id,$date) != 0) ? '' : 'hidden' ?>"
-                            data-role="show-record-to-date-modal"
-                            data-time-title="<?= $day['dayName'] ?>: <?=$timeList[$period['time_start']]?> - <?=$timeList[$period['time_stop']]?>"
-                            data-period-id=<?= $period->id ?>
-                            data-date="<?= $date ?>"
-                            data-schedule-id=<?= $period->schedule_id ?>>
-                            Записать</a>
+
+                        <div class="dropdown <?= $freePlaces == 0 ? "hidden" : "" ?>" data-role="sign-on-date-dropdown">
+                            <a class="href" data-toggle="dropdown">Записать</a>
+                            <div class="dropdown-content ">
+                                <?php  ?>
+                                <a
+                                    data-role="show-sign-object-modal"
+                                    data-period-id="<?= $period->id ?>"
+                                    data-schedule-id="<?= $period->schedule_id ?>"
+                                    >
+                                    Из списка</a>
+                                    <?php  ?>
+                                    <a  class="schedule-link"
+                                        data-role="show-record-to-date-modal"
+                                        data-time-title="<?= $day['dayName'] ?>: <?=$timeList[$period['time_start']]?> - <?=$timeList[$period['time_stop']]?>"
+                                        data-period-id=<?= $period->id ?>
+                                        data-date="<?= $date ?>"
+                                        data-schedule-id=<?= $period->schedule_id ?>>
+                                        Записать</a>
+                            </div>
+                        </div>
+
+
                     </td>
                     <td class="places">Мест:
                         <label>
                             <span data-role="places">
-                              <?= \Yii::$app->schedule->getPlaces($period->schedule_id,$period->id,$date) ?>
+                              <?= $freePlaces ?>
                             </span>
                         </label>
                     </td>
@@ -41,6 +58,7 @@ use halumein\schedule\helpers\RenderButtonHelper;
             <?php } ?>
             </tbody>
         </table>
+
     <div data-role="record-to-date-modal" class="modal fade" role="dialog">
         <div class="modal-dialog">
 

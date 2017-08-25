@@ -6,6 +6,11 @@ usesgraphcrt.schedule = {
 
     init: function () {
         csrfToken = $('meta[name=csrf-token]').attr("content");
+
+        $settings = $('[data-role=schedule-record-on-date-settings]')
+        currentUrl = $(location).attr('href');
+
+
         $ScheduleForm = $('[data-role=schedule-form]');
         $selectTargetModel = $('[data-role=targetModelList]');
         $selectTargetId = $('[data-role=targetId]');
@@ -25,15 +30,19 @@ usesgraphcrt.schedule = {
         $periodsArrayField = $('[data-role=periods-array]');
         $removePeriodBtn = $('[data-role=removePeriod]');
         $sendRecord = $('[data-role=send-record]');
+
         updateRecord = '[data-role=update-record]';
         deleteRecord = '[data-role=delete-record]';
+
         recordToDateShowModalButton = '[data-role=show-record-to-date-modal]';
         signRecordToDateButton = '[data-role=sign-record-to-date]';
+
         $datePickerInput = $('[data-role=records-date-value]');
 
-        $ownerSignObjectShowModalButton = $('[data-role=show-sign-object-modal]');
+        ownerSignObjectShowModalButtonSelector = '[data-role=show-sign-object-modal]';
         $ownerSignObjectModal = $('[data-role=sign-object-modal]');
 
+        signObjectButtonSelector = '[data-role=sign-object]';
 
         $ownerSignCustomObjectShowModalButton = $('[data-role=show-sign-custom-object-modal]');
         $ownerSignCustomObjectModal = $('[data-role=sign-custom-object-modal]');
@@ -42,6 +51,11 @@ usesgraphcrt.schedule = {
         // для быстрого копирования расписания дня на текущий день
         $copySourceDaySelector = $('[data-role=copy-source-day-selector]');
         $copyDayScheduleButton = $('[data-role=copy-day-schedule-button]');
+
+
+        $ownerSignObjectModal.on('hidden.bs.modal', function() {
+            window.history.pushState('current', '', currentUrl);
+        });
 
         $copyDayScheduleButton.on('click', function() {
             var sourceDayId = $copySourceDaySelector.val();
@@ -52,11 +66,8 @@ usesgraphcrt.schedule = {
             $periods.each(function(key, element) {
                 var time = $(element).find('[data-role=schedule-day-item]').html();
                 var places = $(element).find('[data-role=schedule-day-item-amount]').val();
-
                 usesgraphcrt.schedule.addTime(time, places);
             });
-
-
         });
 
         $ownerSignCustomObjectShowModalButton.on('click', function() {
@@ -103,6 +114,10 @@ usesgraphcrt.schedule = {
                         val = +$places.html();
                         $places.html(--val);
 
+                        if (val == 0) {
+                            $('[data-period-id=' + periodId + ']').find('[data-role=sign-on-date-dropdown]').addClass('hidden');
+                        }
+
                         $block.prepend('<div class="user-record"><label>' + name + '</label>' +
                             '<span data-role="target"' +
                             'data-schedule-id="' + scheduleId +
@@ -114,6 +129,8 @@ usesgraphcrt.schedule = {
                             'Удалить</a>)</span></div>');
 
                         $(document).find('[data-role=record-to-date-modal]').modal('hide');
+
+                        usesgraphcrt.schedule.clearCustomRecordForm();
                     }
                 });
             }
@@ -127,10 +144,15 @@ usesgraphcrt.schedule = {
             $timeStopSelect.prop('selectedIndex', selectedIndex + 1) ;
         });
 
-        $ownerSignObjectShowModalButton.on('click', function() {
-            var self = this;
+        // открывает модалку с гридвью объектов из настройки $clientSearchModel
+        $(document).on('click', ownerSignObjectShowModalButtonSelector, function() {
+            var self = this,
+                scheduleId = $(self).data('schedule-id'),
+                periodId = $(self).data('period-id'),
+                url = $settings.data('choose-client-modal-content-url');
+
             $ownerSignObjectModal.modal('toggle');
-            $ownerSignObjectModal.find('.modal-body').load('/schedule/schedule/client-choose-ajax?scheduleId=' + $(self).data('schedule-id') + '&periodId=' + $(self).data('period-id'));
+            $ownerSignObjectModal.find('.modal-body').load(url, {scheduleId: scheduleId, periodId: periodId});
         });
 
         $signCustomButton.on('click', function() {
@@ -152,6 +174,10 @@ usesgraphcrt.schedule = {
                         val = +$places.html();
                         $places.html(--val);
 
+                        if (val == 0) {
+                            $('[data-period-id=' + periodId + ']').find('[data-role=sign-on-date-dropdown]').addClass('hidden');
+                        }
+
                         $block.prepend('<div class="user-record"><label>' + name + '</label>' +
                                 '<span data-role="target"' +
                                 'data-schedule-id="' + scheduleId +
@@ -166,6 +192,8 @@ usesgraphcrt.schedule = {
                                 'Удалить</a>)</span></div>');
 
                         $ownerSignCustomObjectModal.modal('hide');
+
+                        usesgraphcrt.schedule.clearCustomRecordForm();
                     }
                 });
             }
@@ -174,17 +202,18 @@ usesgraphcrt.schedule = {
         /*
         *   Записи объекта на время админом
         */
-        $(document).on('click', '[data-role=sign-object]', function() {
+        $(document).on('click', signObjectButtonSelector, function() {
             var self = this,
                 label = $(self).data('label'),
                 url = $(self).data('url'),
                 scheduleId = $(self).data('schedule-id'),
                 periodId = $(self).data('period-id'),
                 clientModel = $(self).data('client-model'),
-                clientId = $(self).data('client-id');
+                clientId = $(self).data('client-id'),
+                date = $datePickerInput.val();
 
             $.when(
-                usesgraphcrt.schedule.sendRequest(url, scheduleId, periodId, clientModel, clientId, 'confirmed')
+                usesgraphcrt.schedule.sendRequest(url, scheduleId, periodId, clientModel, clientId, 'confirmed', date)
             ).done(function(response) {
                 if (response !== false) {
                     $block = $('[data-period-id=' + periodId + ']').find('.record-list');
@@ -192,6 +221,10 @@ usesgraphcrt.schedule = {
 
                     val = +$places.html();
                     $places.html(--val);
+
+                    if (val == 0) {
+                        $('[data-period-id=' + periodId + ']').find('[data-role=sign-on-date-dropdown]').addClass('hidden');
+                    }
 
                     $block.prepend('<div class="user-record"><label>' + label + '</label>' +
                             '<span data-role="target"' +
@@ -202,8 +235,9 @@ usesgraphcrt.schedule = {
                             '" data-status="canceled" data-role="update-record">Отменить</a> | ' +
                             '<a class="record" data-record-id="' + response.recordId +
                             '" data-status="denied" data-role="update-record">Заблокировать</a> | ' +
-                            '<a class="record" data-record-id="' + response.recordId + '" data-role="delete-record" data-url="/schedule/record/delete"> '+
+                            '<a class="record" data-record-id="' + response.recordId + '" data-role="delete-record" data-url="' + $settings.data('delete-record-url') +'"> '+
                             'Удалить</a>)</span></div>');
+
 
                     $ownerSignObjectModal.modal('hide');
                 }
@@ -219,6 +253,15 @@ usesgraphcrt.schedule = {
                     usesgraphcrt.schedule.deleteRecord(url, recordId)
                 ).done(function(response) {
                     if (response !== false) {
+
+                        $places = $(self).closest('[data-role=period-row]').find('[data-role=places]');
+                        val = +$places.html();
+                        $places.html(++val);
+
+                        if (val != 0) {
+                            $(self).closest('[data-role=period-row]').find('[data-role=sign-on-date-dropdown]').removeClass('hidden');
+                        }
+
                         console.log('test');
                         $(self).closest('.user-record').fadeOut('slow', function() {
                             $(this).remove();
@@ -235,7 +278,6 @@ usesgraphcrt.schedule = {
                 scheduleId = $('[data-role=schedules-list] option:selected').val();
 
             usesgraphcrt.schedule.renderScheduleDay(url,date,scheduleId);
-
         });
 
         $selectTargetModel.on('change',function () {
@@ -258,8 +300,6 @@ usesgraphcrt.schedule = {
 
                 selectedIndex = $timeStartSelect.prop('selectedIndex');
                 $timeStopSelect.prop('selectedIndex', selectedIndex + 1) ;
-
-
             } else {
                 $('#alertBtn').click();
             }
@@ -286,7 +326,7 @@ usesgraphcrt.schedule = {
             } else {
                 date = null;
             }
-            data= {
+            data = {
                 recordId: $(self).data('record-id'),
                 status: $(self).data('status'),
                 periodId: $(self).closest('[data-role=target]').data('period-id'),
@@ -426,11 +466,18 @@ usesgraphcrt.schedule = {
     *   clientModel - модель объекта записи
     *   clientId - ид объекта записи
     */
-    sendRequest: function (url, scheduleId, periodId, clientModel, clientId, status = false) {
+    sendRequest: function (url, scheduleId, periodId, clientModel, clientId, status = false, date = null) {
         return $.ajax({
             type: "POST",
             url: url,
-            data: {scheduleId: scheduleId, periodId: periodId, clientModel: clientModel, clientId: clientId, status: status},
+            data: {
+                scheduleId: scheduleId,
+                periodId: periodId,
+                clientModel: clientModel,
+                clientId: clientId,
+                status: status,
+                date : date
+            },
             success: function (response) {
                 if (response.status == 'success') {
                     return response;
@@ -538,7 +585,13 @@ usesgraphcrt.schedule = {
                 }
             }
         });
-    }
+    },
+
+    clearCustomRecordForm : function() {
+        console.log($ownerSignCustomObjectModal);
+        $(document).find('[data-role=record-to-date-modal]').find('[data-role=record-to-date-name]').val('');
+        $(document).find('[data-role=record-to-date-modal]').find('[data-role=record-to-date-text]').val('');
+    },
 
 };
 

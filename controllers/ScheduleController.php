@@ -231,8 +231,8 @@ class ScheduleController extends Controller
         return $this->renderAjax('_clientChoose', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
-            'periodId' => Yii::$app->request->get('periodId'),
-            'scheduleId' => Yii::$app->request->get('scheduleId'),
+            'periodId' => Yii::$app->request->post('periodId'),
+            'scheduleId' => Yii::$app->request->post('scheduleId'),
         ]);
     }
 
@@ -263,6 +263,7 @@ class ScheduleController extends Controller
             'day' => $day,
             'periods' => $periods,
             'timeList' => $timeList,
+            'scheduleId' => $scheduleId,
         ]);
     }
 

@@ -32,7 +32,12 @@ class RecordController extends Controller
                     [
                         'allow' => true,
                         'roles' => ['@'],
-                        'actions' => ['add','delete','update', 'add-custom']
+                        'actions' => [
+                            'add',
+                            'delete-ajax',
+                            'update',
+                            'add-custom',
+                        ]
                     ],
 
                 ],
@@ -54,10 +59,17 @@ class RecordController extends Controller
         $clientId = Yii::$app->request->post('clientId');
         $status = Yii::$app->request->post('status');
 
+
         $recordId = \Yii::$app->schedule->addRecord( (int)$scheduleId,(int)$periodId, $status, $clientModel, $clientId);
 
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
         if ($recordId){
+
+            if ($date = yii::$app->request->post('date')) {
+                $text = yii::$app->request->post('comment');
+                yii::$app->schedule->addRecordToDate($recordId,$date,$text);
+            }
+
             return [
                 'status' => 'success',
                 'updateUrl' => Url::to(['/schedule/record/update']),
@@ -92,7 +104,7 @@ class RecordController extends Controller
 
             \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
             if ($recordId){
-                
+
                 if ($date = yii::$app->request->post('date')) {
                     yii::$app->schedule->addRecordToDate($recordId,$date,$text);
                 }
@@ -100,7 +112,7 @@ class RecordController extends Controller
                 return [
                     'status' => 'success',
                     'updateUrl' => Url::to(['/schedule/record/update']),
-                    'cancelUrl' => Url::to(['/schedule/record/delete']),
+                    'cancelUrl' => Url::to(['/schedule/record/delete-ajax']),
                     'recordId' => $recordId,
                 ];
             } else {
@@ -118,7 +130,7 @@ class RecordController extends Controller
 
     }
 
-    public function actionDelete()
+    public function actionDeleteAjax()
     {
         $recordId = Yii::$app->request->post('recordId');
 

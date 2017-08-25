@@ -79,26 +79,26 @@ class Schedule extends Component
             }
         }
     }
-    
-    public function addRecordToDate($recordId,$date,$description)
+
+    public function addRecordToDate($recordId,$date,$description = '')
     {
 
         $model  = new RecordToDate();
-        
+
         $model->record_id = $recordId;
         $model->date = date('Y-m-d',strtotime($date));
         $model->description = $description;
-        
+
         if ($model->save()) {
             return [
-              'status' => 'success',  
+              'status' => 'success',
             ];
         }
     }
 
     public function updateRecord($recordId,$status)
     {
-        
+
         $record = Record::find()->where(['id' => $recordId])->one();
         $record->status = $status;
 
@@ -107,14 +107,14 @@ class Schedule extends Component
 
     public function getPlaces($scheduleId,$periodId,$date = null)
     {
-        
+
         if ($date == null) {
             $recordsCount = Record::find()->where([
                 'schedule_id' => $scheduleId,
                 'period_id' => $periodId,
                 'status' => 'confirmed'
             ])->count();
-                       
+
         } else {
             $date = date('Y-m-d',strtotime($date));
 
@@ -125,11 +125,11 @@ class Schedule extends Component
                 'schedule_id' => $scheduleId,
                 'period_id' => $periodId,
                 'status' => 'confirmed'
-            ])->count(); 
+            ])->count();
         }
 
         $amount = Period::findOne($periodId)->amount - $recordsCount;
-        
+
         return $amount;
     }
 
