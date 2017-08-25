@@ -50,6 +50,10 @@ $this->params['breadcrumbs'][] = $this->title;
                 ]);
             ?>
 
+            <div class="form-group">
+                <?= Html::submitButton('Сохранить', ['class' => 'btn btn-success','data-role' => 'submitBtn']) ?>
+            </div>
+
             <?= $form->field($model,'periodsArray')->input('hidden',['data-role' => 'periods-array'])->label(false); ?>
         </div>
         <div class="col-md-8 text-center">
@@ -126,23 +130,20 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
         </div>
     </div>
-    <div class="form-group">
-        <?= Html::submitButton('Сохранить', ['class' => 'btn btn-success','data-role' => 'submitBtn']) ?>
-    </div>
     <?php ActiveForm::end(); ?>
 </div>
 <?php
-Modal::begin([
-'header' => '<h2>Ошибка добавления периода!</h2>',
-'toggleButton' => [
-'tag' => 'button',
-'class' => 'btn btn-lg btn-block btn-info hidden',
- 'id' => 'alertBtn',
-'label' => 'Ошибка',
-]
-]);
-echo '<div class="alert alert-warning">Возможно время начала позже времени окончания или совпадает с ним.'.
-     '<br> Проверьте правильно ли вы задали время и повторите добавление заново.</div>';
+    Modal::begin([
+        'header' => '<h2>Ошибка добавления периода!</h2>',
+        'toggleButton' => [
+            'tag' => 'button',
+            'class' => 'btn btn-lg btn-block btn-info hidden',
+             'id' => 'alertBtn',
+            'label' => 'Ошибка',
+        ]
+    ]);
+    echo '<div class="alert alert-warning">Возможно время начала позже времени окончания или совпадает с ним.'
+         . '<br> Проверьте правильно ли вы задали время и повторите добавление заново.</div>';
 
-Modal::end();
+    Modal::end();
 ?>
