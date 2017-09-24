@@ -75,8 +75,9 @@ class Schedule extends \yii\db\ActiveRecord
 
    public function getActivePeriods($dayId = null)
    {
+       $dayId = (int)$dayId;
        $periods = $this->hasMany(Period::className(), ['schedule_id' => 'id'])->andWhere(['status' => 'active']);
-       if ($dayId && $dayId >= 0){
+       if (!is_null($dayId) && $dayId >= 0){
            $periods->andWhere(['day_id' => $dayId]);
        }
 
