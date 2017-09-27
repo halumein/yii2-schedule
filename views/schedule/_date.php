@@ -20,10 +20,10 @@ use halumein\schedule\helpers\RenderButtonHelper;
                 <tr class="period-row" data-period-id="<?= $period->id ?>" data-role="period-row">
                     <td><?=$timeList[$period['time_start']]?> - <?=$timeList[$period['time_stop']]?></td>
                     <td class="record-list">
-                        <?php foreach($period->getRecordsByDate($date) as $record) {
+                        <?php foreach($period->getRecordsByDate($date)->all() as $record) {
                             echo RenderButtonHelper::renderDatedRecordBlock($record,$period->schedule_id,$period->id,$date);
                         } ?>
-
+                        
                         <div class="dropdown <?= $freePlaces == 0 ? "hidden" : "" ?>" data-role="sign-on-date-dropdown">
                             <a class="href" data-toggle="dropdown">Записать</a>
                             <div class="dropdown-content ">

@@ -46,6 +46,19 @@ $this->params['breadcrumbs'][] = $this->title;
                     ]);
                     ?>
                 </div>
+                <div class="row">
+                    <div class="col-sm-7" style="padding-right:0px;">
+                        <div class="checkbox">
+                          <label><input type="checkbox" value="" data-role="refresh-checkbox" checked>Обновлять раз в</label>
+                        </div>
+                    </div>
+                    <div class="col-sm-2" style="padding-top:5px; padding-right:0px;">
+                        <input type="number" name="" value="5" style="width: 100%;" data-role="refresh-rate-input">
+                    </div>
+                    <div class="col-sm-3" style="padding-top:9px;">
+                        секунд
+                    </div>
+                </div>
             </div>
             <div class="col-md-9" data-role="schedule-on-day">
             </div>
@@ -55,7 +68,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
 <!-- Sign Object Modal -->
-<div data-role="sign-object-modal" class="modal fade" role="dialog">
+<div data-role="create-record-modal" class="modal fade" role="dialog">
     <div class="modal-dialog">
 
         <!-- Modal content-->

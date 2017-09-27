@@ -4,6 +4,7 @@ namespace halumein\schedule;
 use yii\base\Component;
 use yii\helpers\ArrayHelper;
 use halumein\schedule\models\Record;
+use halumein\schedule\models\CustomRecord;
 use halumein\schedule\models\Period;
 use halumein\schedule\models\RecordToDate;
 
@@ -28,7 +29,7 @@ class Schedule extends Component
             $model->period_id =  $periodId;
             $model->client_model =  $clientModel;
             $model->client_id =  $clientId;
-            $model->user_id =  \Yii::$app->user->id;
+            $model->user_id =  \Yii::$app->user->id ? \Yii::$app->user->id : 0;
             if ($status) {
                 $model->status = $status;
             } else {
@@ -133,4 +134,62 @@ class Schedule extends Component
         return $amount;
     }
 
+    public function addCustomRecord($name, $text, $scheduleId, $periodId, $status)
+    {
+        $customRecord = new CustomRecord;
+        $customRecord->name = $name;
+        $customRecord->text = $text;
+        if ($customRecord->save()) {
+
+            $scheduleId = $scheduleId;
+            $periodId = $periodId;
+
+            $clientModel = $customRecord::className();
+            $clientId = $customRecord->id;
+
+            $status = $status;
+
+            $recordId = \Yii::$app->schedule->addRecord( (int)$scheduleId,(int)$periodId, $status, $clientModel, $clientId);
+
+            if ($recordId){
+                return $recordId;
+            } else {
+                return false;
+            }
+        } else {
+            var_dump($customRecord->getErrors());
+            return false;
+        }
+    }
+
+    public function checkFreeSlots($periodId, $date, $amount = 1)
+    {
+        $periodModel = Period::findOne($periodId);
+
+        $totalAmountAvailable = $periodModel->amount;
+
+        $records = Record::find()->where([
+                'schedule_id' => $periodModel->schedule_id,
+                'period_id' => $periodId,
+                'status' => 'confirmed'])->all();
+
+        // занятого времени нет - значит свободно
+        if (!$records) {
+            return true;
+        }
+
+        $recordIds = ArrayHelper::getColumn($records, 'id');
+
+        $recordsToDate = RecordToDate::find()->where(['record_id' => $recordIds, 'date' => $date])->all();
+
+        $recordIds = ArrayHelper::getColumn($recordsToDate, 'record_id');
+
+        $slotReservAmount = Record::find()->where(['id' => $recordIds, 'status' => 'confirmed'])->sum('amount');
+        if  (((int)$totalAmountAvailable - (int)$slotReservAmount) >= $amount) {
+            return true;
+        }
+
+        return false;
+
+    }
 }

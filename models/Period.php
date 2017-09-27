@@ -74,7 +74,7 @@ class Period extends \yii\db\ActiveRecord
 
     public function getRecords()
     {
-        return Record::find()->where(['period_id' => $this->id])->all();
+        return Record::find()->where(['period_id' => $this->id]);
     }
 
     public function getRecordsByDate($date)
@@ -84,7 +84,7 @@ class Period extends \yii\db\ActiveRecord
 
         $recordIds = ArrayHelper::getColumn(RecordToDate::find()->select('record_id')->where(['date' => $date])->all(),'record_id');
 
-        return Record::find()->where(['period_id' => $this->id, 'id' => $recordIds])->all();
+        return Record::find()->where(['period_id' => $this->id, 'id' => $recordIds]);
     }
 
 

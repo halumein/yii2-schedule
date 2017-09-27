@@ -193,9 +193,10 @@ class RenderButtonHelper
             $model = new $record->client_model;
             $client = $model->findOne($record->client_id);
             $clientObjectName = $client->name;
+            $clientObjectText = $client->text;
         }
 
-        $label = $clientObjectName ? $clientObjectName : $users[$record->user_id];
+        $label = $clientObjectName ? $clientObjectName . " - " . $clientObjectText : $users[$record->user_id];
 
         $block = '<div class="user-record"><label>'.$label.' </label>
         '.'<span data-role="target"

@@ -31,6 +31,9 @@ usesgraphcrt.schedule = {
         $removePeriodBtn = $('[data-role=removePeriod]');
         $sendRecord = $('[data-role=send-record]');
 
+        $refreshCheckbox = $('[data-role=refresh-checkbox]');
+        $refreshRateInput = $('[data-role=refresh-rate-input]');
+
         updateRecord = '[data-role=update-record]';
         deleteRecord = '[data-role=delete-record]';
 
@@ -384,8 +387,39 @@ usesgraphcrt.schedule = {
             $datePickerInput.trigger('change');
         });
 
-        $datePickerInput.trigger('change');
+        setTimeout(function() {
+            usesgraphcrt.schedule.refresh();
+        }, 1000);
+        // $datePickerInput.trigger('change');
+
     },
+
+    refresh : function() {
+        var modalShown = false;
+        if (($ownerSignObjectModal.data('bs.modal') || {isShown: false}).isShown) {
+            modalShown = true;
+        }
+
+        if (($(document).find('[data-role=record-to-date-modal]').data('bs.modal') || {isShown: false}).isShown) {
+            modalShown = true;
+        }
+
+        if($refreshCheckbox.is(':checked') && modalShown == false) {
+            $datePickerInput.trigger('change');
+        }
+
+        var refreshRate = $refreshRateInput.val();
+        if (refreshRate == "" || refreshRate <= 5) {
+            refreshRate = 5;
+        }
+
+        refreshrate = refreshRate * 1000;
+
+        setTimeout(function() {
+            usesgraphcrt.schedule.refresh();
+        }, refreshrate);
+    },
+
 
     addTime: function (time, places = 1) {
         $('.tab-content .active [data-role=time-block]').append($('<div class="row added-period"' +

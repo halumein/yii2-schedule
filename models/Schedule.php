@@ -84,7 +84,6 @@ class Schedule extends \yii\db\ActiveRecord
        return $periods->orderBy(['time_start' => SORT_ASC]);
    }
 
-
    public function getPlaceAmount()
    {
        $amount = Record::find()->count(['schedule_id' => $this->id]);

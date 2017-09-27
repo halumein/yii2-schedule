@@ -86,7 +86,7 @@
 }
 
 .schedule-time-column {
-    width: 200px;
+    width: 100px;
 }
 
 .schedule-record-column {
@@ -94,5 +94,5 @@
 }
 
 .schedule-places-column {
-    width: 200px;
+    width: 80px;
 }
