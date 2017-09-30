@@ -442,7 +442,7 @@ usesgraphcrt.schedule = {
                             $selectTargetId.append('<option value="'+key+'">'+val+'</option>');
                         });
                         if (targetId != '') {
-                            $('#Schedule-target_id option[value='+targetId+']').attr('selected', 'selected');
+                            $('#schedule-target_id option[value='+targetId+']').attr('selected', 'selected');
                         }
                     }
                 }
