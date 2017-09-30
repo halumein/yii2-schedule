@@ -13,7 +13,7 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="schedule-schedule-index">
 
-    <h1><a href="<?= Url::to(['schedule/schedule-list'])?>"><?= Html::encode($this->title) ?></a></h1>
+    <h1 class="schedule-list-url" ><a href="<?= Url::to(['schedule/schedule-list'])?>"><?= Html::encode($this->title) ?></a></h1>
     <p>
         <?= Html::a('Создать расписание', ['update'], ['class' => 'btn btn-success']) ?>
     </p>
