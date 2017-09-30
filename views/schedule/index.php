@@ -43,7 +43,18 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             'name',
             // 'date',
-
+            [
+                'label' => 'active',
+                'format' => 'html',
+                'value' => function($model) {
+                    if ($model->active) {
+                        $html = Html::a('Отключить', ['/schedule/schedule/set-unactive', 'id' => $model->id]);
+                    } else {
+                        $html = Html::a('Включить', ['/schedule/schedule/set-active', 'id' => $model->id]);
+                    }
+                    return $html;
+                }
+            ],
             [
                 'class' => 'yii\grid\ActionColumn',
                 'template' => '{update} {delete}',

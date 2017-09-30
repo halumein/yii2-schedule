@@ -41,7 +41,7 @@ class Schedule extends \yii\db\ActiveRecord
     {
         return [
             [['owner_id', 'target_model', 'target_id'], 'required'],
-            [['owner_id', 'target_id'], 'integer'],
+            [['owner_id', 'target_id', 'active'], 'integer'],
             [['date'], 'safe'],
             [['target_model', 'name'], 'string', 'max' => 255],
             [['periodsArray'],'string'],
@@ -58,6 +58,7 @@ class Schedule extends \yii\db\ActiveRecord
             'target_id' => 'Экземпляр модели',
             'name' => 'Имя',
             'date' => 'Уникальная дата',
+            'active' => 'Активно',
         ];
     }
 

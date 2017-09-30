@@ -43,7 +43,9 @@ class ScheduleController extends Controller
                             'schedule-list',
                             'client-choose-ajax',
                             'date-view',
-                            'find-records-ajax'
+                            'find-records-ajax',
+                            'set-active',
+                            'set-unactive',
                         ]
                     ],
 
@@ -267,9 +269,22 @@ class ScheduleController extends Controller
         ]);
     }
 
-    public function actionAddDatedRecord()
+    public function actionSetUnactive($id)
     {
+        $schedule = Schedule::findOne($id);
+        $schedule->active = 0;
+        $schedule->update();
 
+        return $this->redirect(Yii::$app->request->referrer);
+    }
+
+    public function actionSetActive($id)
+    {
+        $schedule = Schedule::findOne($id);
+        $schedule->active = 1;
+        $schedule->update();
+
+        return $this->redirect(Yii::$app->request->referrer);;
     }
 
     private function savePeriod($periodsArray,$scheduleId){
