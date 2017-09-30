@@ -98,4 +98,12 @@ class Schedule extends \yii\db\ActiveRecord
 
        return $model->{$title};
    }
+
+   public function getTargetModel()
+   {
+       $model = $this->target_model;
+       $model = $model::findOne($this->target_id);
+
+       return $model;
+   }
 }
