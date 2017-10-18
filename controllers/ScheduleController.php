@@ -46,6 +46,7 @@ class ScheduleController extends Controller
                             'find-records-ajax',
                             'set-active',
                             'set-unactive',
+                            'clear-day-periods-ajax'
                         ]
                     ],
 
@@ -284,7 +285,24 @@ class ScheduleController extends Controller
         $schedule->active = 1;
         $schedule->update();
 
-        return $this->redirect(Yii::$app->request->referrer);;
+        return $this->redirect(Yii::$app->request->referrer);
+    }
+
+    public function actionClearDayPeriodsAjax()
+    {
+        if (!\Yii::$app->request->isAjax) {
+            return false;
+        }
+
+        if  ($clearData = \Yii::$app->request->post('clearData')) {
+            \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+            \Yii::$app->schedule->clearPeriods($clearData['dayId'], $clearData['scheduleId']);
+
+            return [
+                'status' => 'success'
+            ];
+        }
     }
 
     private function savePeriod($periodsArray,$scheduleId){

@@ -57,26 +57,26 @@ class Schedule extends Component
     public function addPeriod($days,$scheduleId,$times)
     {
         foreach ($days as $day => $dayPeriods) {
+
             foreach ($dayPeriods as $indexPeriod => $period) {
                 if ($period->periodId != 'NULL') {
                     $model = Period::findOne($period->periodId);
                 } else {
                     $model = new Period();
                 }
+                if  ($model) {
+                    $model->schedule_id = $scheduleId;
+                    $model->day_id = $day;
+                    $model->status = $period->status;
+                    $time = explode('-',$period->time);
+                    $model->time_start = $times[trim($time[0])];
+                    $model->time_stop = $times[trim($time[1])];
+                    $model->amount = $period->amount;
 
-                $model->schedule_id = $scheduleId;
-                $model->day_id = $day;
-                $model->status = $period->status;
-                $time = explode('-',$period->time);
-                $model->time_start = $times[trim($time[0])];
-                $model->time_stop = $times[trim($time[1])];
-                $model->amount = $period->amount;
-
-                if ($model->validate() && $model->save()){
-
-
-                    // do nothing
-                } else var_dump($model->getErrors());
+                    if ($model->validate() && $model->save()){
+                        // do nothing
+                    } else var_dump($model->getErrors());
+                }
             }
         }
     }
@@ -190,6 +190,17 @@ class Schedule extends Component
         }
 
         return false;
+
+    }
+
+    public function clearPeriods($day, $scheduleId)
+    {
+        $command = \Yii::$app->db->createCommand()
+            ->update('schedule_period', ['status'=> 'deleted'],
+                ['id' => ArrayHelper::getColumn(
+                    Period::find()->where(['day_id' => $day, 'schedule_id' => $scheduleId])->select('id')->all(), 'id'
+                )])
+            ->execute();
 
     }
 }

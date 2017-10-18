@@ -25,6 +25,11 @@ $this->params['breadcrumbs'][] = $this->title;
     ]);
     ?>
     <div class="row container-fluid">
+        <div class="hidden"
+             data-role="info"
+             data-url="<?= Url::to(['/schedule/schedule/clear-day-periods-ajax']) ?>"
+             data-schedule-id="<?= $model->id ?>">
+        </div>
         <div class="col-md-4">
             <?= $form->field($model,'name')->input('text')->label('Название расписания'); ?>
 

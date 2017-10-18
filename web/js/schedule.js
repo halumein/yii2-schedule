@@ -61,15 +61,28 @@ usesgraphcrt.schedule = {
         });
 
         $copyDayScheduleButton.on('click', function() {
-            var sourceDayId = $copySourceDaySelector.val();
-            $('.tab-content .active [data-role=time-block]').html('');
+            var data = {
+                    'dayId' : $('.tab-content .active [data-role=time-block]').data('target-id'),
+                    'scheduleId' : $(document).find('[data-role=info]').data('schedule-id')
+                },
+                url = $(document).find('[data-role=info]').data('url');
+            
+            $.when(
+                usesgraphcrt.schedule.preCopy(url, data)
+            ).done(function (response) {
+                if (response.status == 'success') {
+                    console.log('successful copied');
+                    var sourceDayId = $copySourceDaySelector.val();
+                    $('.tab-content .active [data-role=time-block]').html('');
 
-            var $periods = $(document).find('[data-day-id=' + sourceDayId + ']').find('[data-role=time-row]').clone();
+                    var $periods = $(document).find('[data-day-id=' + sourceDayId + ']').find('[data-role=time-row]').clone();
 
-            $periods.each(function(key, element) {
-                var time = $(element).find('[data-role=schedule-day-item]').html();
-                var places = $(element).find('[data-role=schedule-day-item-amount]').val();
-                usesgraphcrt.schedule.addTime(time, places);
+                    $periods.each(function(key, element) {
+                        var time = $(element).find('[data-role=schedule-day-item]').html();
+                        var places = $(element).find('[data-role=schedule-day-item-amount]').val();
+                        usesgraphcrt.schedule.addTime(time, places);
+                    });
+                }
             });
         });
 
@@ -630,6 +643,14 @@ usesgraphcrt.schedule = {
         $(document).find('[data-role=record-to-date-modal]').find('[data-role=record-to-date-name]').val('');
         $(document).find('[data-role=record-to-date-modal]').find('[data-role=record-to-date-text]').val('');
     },
+    
+    preCopy: function (url, data) {
+        return $.ajax({
+            type: 'POST',
+            url: url,
+            data: {clearData: data}
+        });
+    }
 
 };
 
