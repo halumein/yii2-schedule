@@ -174,5 +174,4 @@ class RecordController extends Controller
             ];
         }
     }
-
 }

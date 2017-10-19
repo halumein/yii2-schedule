@@ -46,7 +46,8 @@ class ScheduleController extends Controller
                             'find-records-ajax',
                             'set-active',
                             'set-unactive',
-                            'clear-day-periods-ajax'
+                            'clear-day-periods-ajax',
+                            'get-periods-ajax'
                         ]
                     ],
 
@@ -195,7 +196,8 @@ class ScheduleController extends Controller
         }
     }
 
-    public function actionGetTargetsByModel() {
+    public function actionGetTargetsByModel() 
+    {
         $list = [];
 
         $modelName = Yii::$app->request->get('model');
@@ -305,12 +307,43 @@ class ScheduleController extends Controller
         }
     }
 
-    private function savePeriod($periodsArray,$scheduleId){
+    private function savePeriod($periodsArray,$scheduleId)
+    {
 
         $days = json_decode($periodsArray);
 
         $times = ArrayHelper::map(Time::find()->all(),'time','id');
 
         $periodId = \Yii::$app->schedule->addPeriod($days,$scheduleId,$times);
+    }
+
+    public function actionGetPeriodsAjax()
+    {
+        if (!\Yii::$app->request->isAjax) {
+            return false;
+        }
+
+        if  ($data = \Yii::$app->request->post('data')) {
+            \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+            $scheduleModel = Schedule::findOne($data['scheduleId']);
+            $dayId = date('w', strtotime($data['date']));
+            
+            
+            $periods = $scheduleModel->getActivePeriods($dayId)->all();
+            
+            if ($periods) {
+                $periods = ArrayHelper::map($periods, 'id', function($period){
+                    return $period->time->start->time;
+                });
+            } else {
+                $periods = [];
+            }
+            
+            return [
+                'status' => 'success',
+                'periods' => $periods,
+            ];
+        }
     }
 }

@@ -64,5 +64,10 @@ class Record extends \yii\db\ActiveRecord
     {
         return $this->hasOne(RecordToDate::className(), ['record_id' => 'id']);
     }
+    
+    public function getSchedule()
+    {
+        return $this->hasOne(Schedule::className(), ['id' => 'schedule_id'])->andWhere(['active' => Schedule::STATUS_ACTIVE]);
+    }
 
 }
