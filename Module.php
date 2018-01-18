@@ -8,6 +8,7 @@ use Yii;
 class Module extends \yii\base\Module
 {
     const EVENT_RECORD_CREATE = 'record_create';
+    const EVENT_CUSTOM_RECORD_CREATE = 'custom_record_create';
     const EVENT_RECORD_DELETE = 'record_delete';
     
     public $componentList = null;

@@ -66,6 +66,11 @@ class RecordController extends Controller
                 yii::$app->schedule->addRecordToDate($recordId,$date,$text);
             }
 
+            $model = Record::findOne($recordId);
+            $module = $this->module;
+            $scheduleEvent = new ScheduleEvent(['recordModel' => $model]);
+            $this->module->trigger($module::EVENT_RECORD_CREATE, $scheduleEvent);
+            
             return [
                 'status' => 'success',
                 'updateUrl' => Url::to(['/schedule/record/update']),
@@ -104,6 +109,11 @@ class RecordController extends Controller
                 if ($date = yii::$app->request->post('date')) {
                     yii::$app->schedule->addRecordToDate($recordId,$date,$text);
                 }
+
+                $model = Record::findOne($recordId);
+                $module = $this->module;
+                $scheduleEvent = new ScheduleEvent(['recordModel' => $model]);
+                $this->module->trigger($module::EVENT_CUSTOM_RECORD_CREATE, $scheduleEvent);
 
                 return [
                     'status' => 'success',
