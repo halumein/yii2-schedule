@@ -3,19 +3,15 @@
 namespace halumein\schedule\controllers;
 
 use Yii;
-use halumein\schedule\models\Schedule;
-use halumein\schedule\models\Period;
-use halumein\schedule\models\Time;
-use halumein\schedule\models\Record;
-use halumein\schedule\models\CustomRecord;
-use halumein\schedule\models\search\ScheduleSearch;
-use halumein\schedule\models\UserToSchedule;
-use yii\helpers\Json;
+
 use yii\helpers\Url;
 use yii\web\Controller;
-use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
-use yii\helpers\ArrayHelper;
+
+use halumein\schedule\models\Record;
+use halumein\schedule\models\CustomRecord;
+
+use halumein\schedule\events\ScheduleEvent;
 
 
 class RecordController extends Controller
@@ -133,6 +129,11 @@ class RecordController extends Controller
     public function actionDeleteAjax()
     {
         $recordId = Yii::$app->request->post('recordId');
+
+        $model = Record::findOne($recordId);
+        $module = $this->module;
+        $scheduleEvent = new ScheduleEvent(['recordModel' => $model]);
+        $this->module->trigger($module::EVENT_RECORD_DELETE, $scheduleEvent);
 
         $success = \Yii::$app->schedule->deleteRecord($recordId);
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
